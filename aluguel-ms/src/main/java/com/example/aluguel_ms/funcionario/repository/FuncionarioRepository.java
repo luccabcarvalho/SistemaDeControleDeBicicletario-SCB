@@ -24,4 +24,16 @@ public class FuncionarioRepository {
     public Optional<Funcionario> findByMatricula(String matricula) {
         return Optional.ofNullable(funcionarios.get(matricula));
     }
+
+    public Funcionario update(Funcionario funcionario) {
+        if (funcionarios.containsKey(funcionario.getMatricula())) {
+            funcionarios.put(funcionario.getMatricula(), funcionario);
+            return funcionario;
+        }
+        return null;
+    }
+
+    public boolean deleteByMatricula(String matricula) {
+        return funcionarios.remove(matricula) != null;
+    }
 }

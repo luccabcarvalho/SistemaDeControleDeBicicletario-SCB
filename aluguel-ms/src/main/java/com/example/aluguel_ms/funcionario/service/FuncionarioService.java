@@ -25,4 +25,12 @@ public class FuncionarioService {
     public Optional<Funcionario> buscarPorMatricula(String matricula) {
         return repository.findByMatricula(matricula);
     }
+
+    public Funcionario atualizarFuncionario(Funcionario funcionario) {
+        return repository.update(funcionario);
+    }
+
+    public boolean removerPorMatricula(String matricula) {
+        return repository.deleteByMatricula(matricula);
+    }
 }
