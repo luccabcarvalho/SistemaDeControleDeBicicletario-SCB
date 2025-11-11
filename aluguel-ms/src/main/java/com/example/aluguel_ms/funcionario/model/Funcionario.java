@@ -3,7 +3,6 @@ package com.example.aluguel_ms.model;
 public class Funcionario {
     private String matricula;
     private String senha;
-    private String confirmacaoSenha;
     private String email;
     private String nome;
     private int idade;
@@ -15,9 +14,6 @@ public class Funcionario {
 
     public String getSenha() { return senha; }
     public void setSenha(String senha) { this.senha = senha; }
-
-    public String getConfirmacaoSenha() { return confirmacaoSenha; }
-    public void setConfirmacaoSenha(String confirmacaoSenha) { this.confirmacaoSenha = confirmacaoSenha; }
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
