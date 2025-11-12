@@ -1,7 +1,7 @@
-package com.example.aluguel_ms.service;
+package com.example.aluguel_ms.funcionario.service;
 
-import com.example.aluguel_ms.model.Funcionario;
-import com.example.aluguel_ms.repository.FuncionarioRepository;
+import com.example.aluguel_ms.funcionario.model.Funcionario;
+import com.example.aluguel_ms.funcionario.repository.FuncionarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +11,18 @@ import java.util.Optional;
 @Service
 public class FuncionarioService {
 
-    @Autowired
-    private FuncionarioRepository repository;
+    private final FuncionarioRepository repository;
+
+    public FuncionarioService(FuncionarioRepository repository) {
+        this.repository = repository;
+    }
 
     public Funcionario criarFuncionario(Funcionario funcionario) {
+        String matricula;
+        do {
+            matricula = "F" + java.util.UUID.randomUUID().toString().replaceAll("-", "").substring(0, 8).toUpperCase();
+        } while (repository.findByMatricula(matricula).isPresent());
+        funcionario.setMatricula(matricula);
         return repository.save(funcionario);
     }
 
@@ -27,10 +35,15 @@ public class FuncionarioService {
     }
 
     public Funcionario atualizarFuncionario(Funcionario funcionario) {
-        return repository.update(funcionario);
+        return repository.save(funcionario);
     }
 
     public boolean removerPorMatricula(String matricula) {
-        return repository.deleteByMatricula(matricula);
+        Optional<Funcionario> existente = repository.findByMatricula(matricula);
+        if (existente.isPresent()) {
+            repository.delete(existente.get());
+            return true;
+        }
+        return false;
     }
 }
