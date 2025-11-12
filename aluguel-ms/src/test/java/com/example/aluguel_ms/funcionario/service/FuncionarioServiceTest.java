@@ -1,8 +1,7 @@
 package com.example.aluguel_ms.funcionario.service;
 
-import com.example.aluguel_ms.model.Funcionario;
-import com.example.aluguel_ms.repository.FuncionarioRepository;
-import com.example.aluguel_ms.service.FuncionarioService;
+import com.example.aluguel_ms.funcionario.model.Funcionario;
+import com.example.aluguel_ms.funcionario.repository.FuncionarioRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -53,17 +52,29 @@ class FuncionarioServiceTest {
     @Test
     void testAtualizarFuncionario() {
         Funcionario f = new Funcionario();
-        when(repository.update(f)).thenReturn(f);
+        when(repository.save(f)).thenReturn(f);
         Funcionario result = service.atualizarFuncionario(f);
         assertEquals(f, result);
-        verify(repository).update(f);
+        verify(repository).save(f);
     }
 
     @Test
-    void testRemoverPorMatricula() {
-        when(repository.deleteByMatricula("xyz")).thenReturn(true);
+    void testRemoverPorMatriculaSuccess() {
+        Funcionario f = new Funcionario();
+        when(repository.findByMatricula("xyz")).thenReturn(Optional.of(f));
+        doNothing().when(repository).delete(f);
         boolean result = service.removerPorMatricula("xyz");
         assertTrue(result);
-        verify(repository).deleteByMatricula("xyz");
+        verify(repository).findByMatricula("xyz");
+        verify(repository).delete(f);
+    }
+
+    @Test
+    void testRemoverPorMatriculaNotFound() {
+        when(repository.findByMatricula("notfound")).thenReturn(Optional.empty());
+        boolean result = service.removerPorMatricula("notfound");
+        assertFalse(result);
+        verify(repository).findByMatricula("notfound");
+        verify(repository, never()).delete(any());
     }
 }
