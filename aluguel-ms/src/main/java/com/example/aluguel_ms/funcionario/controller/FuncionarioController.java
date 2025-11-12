@@ -1,7 +1,7 @@
-package com.example.aluguel_ms.controller;
+package com.example.aluguel_ms.funcionario.controller;
 
-import com.example.aluguel_ms.model.Funcionario;
-import com.example.aluguel_ms.service.FuncionarioService;
+import com.example.aluguel_ms.funcionario.model.Funcionario;
+import com.example.aluguel_ms.funcionario.service.FuncionarioService;
 
 import java.util.List;
 
@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/funcionario")
 public class FuncionarioController {
 
-    @Autowired
     private FuncionarioService service;
+
+    public FuncionarioController(FuncionarioService service) {
+        this.service = service;
+    }
 
     @PostMapping
     public ResponseEntity<Funcionario> criarFuncionario(@RequestBody Funcionario funcionario) {
@@ -27,20 +30,20 @@ public class FuncionarioController {
         return ResponseEntity.ok(service.listarTodos());
     }
 
-    @GetMapping("/{idFuncionario}")
-    public ResponseEntity<Funcionario> buscarFuncionario(@PathVariable String idFuncionario) {
-        return service.buscarPorMatricula(idFuncionario)
+    @GetMapping("/{matricula}")
+    public ResponseEntity<Funcionario> buscarFuncionario(@PathVariable String matricula) {
+        return service.buscarPorMatricula(matricula)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/{idFuncionario}")
-    public ResponseEntity<?> editarFuncionario(@PathVariable String idFuncionario, @RequestBody Funcionario funcionario) {
-        java.util.Optional<Funcionario> existente = service.buscarPorMatricula(idFuncionario);
+    @PutMapping("/{matricula}")
+    public ResponseEntity<?> editarFuncionario(@PathVariable String matricula, @RequestBody Funcionario funcionario) {
+        java.util.Optional<Funcionario> existente = service.buscarPorMatricula(matricula);
         if (existente.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        funcionario.setMatricula(idFuncionario);
+        funcionario.setMatricula(matricula);
         java.util.List<String> erros = validarFuncionario(funcionario, false);
         if (!erros.isEmpty()) {
             return ResponseEntity.unprocessableEntity().body(erros);
@@ -49,9 +52,9 @@ public class FuncionarioController {
         return ResponseEntity.ok(atualizado);
     }
 
-    @DeleteMapping("/{idFuncionario}")
-    public ResponseEntity<?> removerFuncionario(@PathVariable String idFuncionario) {
-        boolean removido = service.removerPorMatricula(idFuncionario);
+    @DeleteMapping("/{matricula}")
+    public ResponseEntity<?> removerFuncionario(@PathVariable String matricula) {
+        boolean removido = service.removerPorMatricula(matricula);
         if (!removido) {
             return ResponseEntity.notFound().build();
         }

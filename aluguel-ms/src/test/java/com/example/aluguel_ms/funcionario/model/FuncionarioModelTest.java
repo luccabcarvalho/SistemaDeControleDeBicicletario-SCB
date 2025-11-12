@@ -1,6 +1,5 @@
 package com.example.aluguel_ms.funcionario.model;
 
-import com.example.aluguel_ms.model.Funcionario;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
