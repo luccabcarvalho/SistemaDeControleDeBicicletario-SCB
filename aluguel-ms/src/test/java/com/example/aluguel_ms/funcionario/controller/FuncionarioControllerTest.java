@@ -1,8 +1,8 @@
 package com.example.aluguel_ms.funcionario.controller;
 
-import com.example.aluguel_ms.controller.FuncionarioController;
-import com.example.aluguel_ms.model.Funcionario;
-import com.example.aluguel_ms.service.FuncionarioService;
+import com.example.aluguel_ms.funcionario.controller.FuncionarioController;
+import com.example.aluguel_ms.funcionario.model.Funcionario;
+import com.example.aluguel_ms.funcionario.service.FuncionarioService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
