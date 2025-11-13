@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CartaoDeCreditoService {
-    public boolean validarCartao(MeioDePagamento meioDePagamento) {
+    public boolean validarCartao() {
         return true; // sempre sucesso
     }
 }
