@@ -74,7 +74,7 @@ class CiclistaServiceTest {
             ciclistaService.ativarCiclista(1L);
         });
 
-        assertEquals("Este registro não está pendente de ativação.", exception.getMessage());
+        assertEquals("Este registro não está pendente para ativação.", exception.getMessage());
 
         verify(repository, never()).save(any());
     }
