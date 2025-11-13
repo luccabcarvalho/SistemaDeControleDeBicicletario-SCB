@@ -2,6 +2,7 @@ package com.example.aluguel_ms.ciclista.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Entity
@@ -35,6 +36,11 @@ public class Ciclista {
 
     @Column(nullable = false)
     private String senha;
+
+    @Column(nullable = false)
+    private String status;
+
+    private LocalDateTime dataConfirmacaoEmail;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "meio_de_pagamento_id")
@@ -120,6 +126,22 @@ public class Ciclista {
 
     public void setMeioDePagamento(MeioDePagamento meioDePagamento) {
         this.meioDePagamento = meioDePagamento;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getDataConfirmacaoEmail() {
+        return dataConfirmacaoEmail;
+    }
+
+    public void setDataConfirmacaoEmail(LocalDateTime dataConfirmacaoEmail) {
+        this.dataConfirmacaoEmail = dataConfirmacaoEmail;
     }
 
     public static Ciclista fromMap(Map<String, Object> map) {
