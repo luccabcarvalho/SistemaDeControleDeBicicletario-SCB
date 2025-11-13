@@ -40,7 +40,9 @@ public class Ciclista {
     @JoinColumn(name = "meio_de_pagamento_id")
     private MeioDePagamento meioDePagamento;
 
-    public Ciclista() {}
+    public Ciclista() {
+        // Construtor padrão exigido pelo JPA para a criação de instâncias.
+    }
 
     public Integer getId() {
         return id;
