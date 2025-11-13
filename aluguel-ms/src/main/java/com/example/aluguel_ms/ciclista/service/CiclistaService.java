@@ -4,6 +4,8 @@ import com.example.aluguel_ms.ciclista.model.Ciclista;
 import com.example.aluguel_ms.ciclista.model.MeioDePagamento;
 import com.example.aluguel_ms.ciclista.repository.CiclistaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDateTime;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +25,7 @@ public class CiclistaService {
 
     public Ciclista cadastrarCiclista(Ciclista ciclista, MeioDePagamento meioDePagamento) {
         ciclista.setMeioDePagamento(meioDePagamento);
+        ciclista.setStatus("PENDENTE");
         return repository.save(ciclista);
     }
 
@@ -58,5 +61,22 @@ public class CiclistaService {
             return true;
         }
         return false;
+    }
+
+    @Transactional
+    public void ativarCiclista(Long idCiclista) {
+
+        Ciclista ciclista = repository.findById(idCiclista)
+                .orElseThrow(() -> new RuntimeException("Dados inválidos."));
+
+        if (!"PENDENTE".equals(ciclista.getStatus())) {
+            throw new RuntimeException("Este registro não está pendente para ativação.");
+        }
+
+        ciclista.setStatus("ATIVO");
+
+        ciclista.setDataConfirmacaoEmail(LocalDateTime.now());
+
+        repository.save(ciclista);
     }
 }
