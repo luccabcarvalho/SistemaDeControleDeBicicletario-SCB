@@ -10,7 +10,9 @@ public class Passaporte {
     private LocalDate validade;
     private String pais;
 
-    public Passaporte() {}
+    public Passaporte() {
+        // Construtor padrão exigido pelo JPA para a criação de instâncias.
+    }
 
     public String getNumero() {
         return numero;
