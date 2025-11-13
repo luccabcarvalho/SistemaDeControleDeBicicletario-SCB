@@ -11,6 +11,73 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class CiclistaControllerTest {
+    @Test
+    void testExisteEmailTrue() {
+        when(service.existeEmail("teste@teste.com")).thenReturn(true);
+        ResponseEntity<Boolean> response = controller.existeEmail("teste@teste.com");
+        assertEquals(200, response.getStatusCodeValue());
+        assertTrue(response.getBody());
+    }
+
+    @Test
+    void testExisteEmailFalse() {
+        when(service.existeEmail("naoexiste@teste.com")).thenReturn(false);
+        ResponseEntity<Boolean> response = controller.existeEmail("naoexiste@teste.com");
+        assertEquals(200, response.getStatusCodeValue());
+        assertFalse(response.getBody());
+    }
+
+    @Test
+    void testCadastrarCiclistaCartaoValido() {
+        Map<String, Object> ciclistaMap = new HashMap<>();
+        ciclistaMap.put("nome", "Joao");
+        ciclistaMap.put("nascimento", "1995-05-05");
+        ciclistaMap.put("cpf", "11122233344");
+        ciclistaMap.put("nacionalidade", "Brasileiro");
+        ciclistaMap.put("email", "joao@teste.com");
+        ciclistaMap.put("urlFotoDocumento", "urlFoto");
+        ciclistaMap.put("senha", "senhaJoao");
+    Map<String, Object> meioDePagamentoMap = new HashMap<>();
+    meioDePagamentoMap.put("nomeTitular", "Joao");
+    meioDePagamentoMap.put("numero", "1234567890123456");
+    meioDePagamentoMap.put("validade", "2030-12-31");
+    meioDePagamentoMap.put("cvv", "123");
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("ciclista", ciclistaMap);
+        payload.put("meioDePagamento", meioDePagamentoMap);
+        Ciclista ciclistaCriado = new Ciclista();
+        when(cartaoService.validarCartao()).thenReturn(true);
+        when(service.cadastrarCiclista(any(), any())).thenReturn(ciclistaCriado);
+    when(emailService.enviarEmail()).thenReturn(true);
+        ResponseEntity<String> response = controller.cadastrarCiclista(payload);
+        assertEquals(201, response.getStatusCodeValue());
+        assertEquals(ciclistaCriado.toString(), response.getBody());
+    }
+
+    @Test
+    void testCadastrarCiclistaCartaoInvalido() {
+        Map<String, Object> ciclistaMap = new HashMap<>();
+        ciclistaMap.put("nome", "Joao");
+        ciclistaMap.put("nascimento", "1995-05-05");
+        ciclistaMap.put("cpf", "11122233344");
+        ciclistaMap.put("nacionalidade", "Brasileiro");
+        ciclistaMap.put("email", "joao@teste.com");
+        ciclistaMap.put("urlFotoDocumento", "urlFoto");
+        ciclistaMap.put("senha", "senhaJoao");
+    Map<String, Object> meioDePagamentoMap = new HashMap<>();
+    meioDePagamentoMap.put("nomeTitular", "Joao");
+    meioDePagamentoMap.put("numero", "1234567890123456");
+    meioDePagamentoMap.put("validade", "2030-12-31");
+    meioDePagamentoMap.put("cvv", "123");
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("ciclista", ciclistaMap);
+        payload.put("meioDePagamento", meioDePagamentoMap);
+        when(cartaoService.validarCartao()).thenReturn(false);
+    when(emailService.enviarEmail()).thenReturn(true);
+        ResponseEntity<String> response = controller.cadastrarCiclista(payload);
+        assertEquals(422, response.getStatusCodeValue());
+        assertEquals("Cartão inválido", response.getBody());
+    }
 
     @Mock
     private CiclistaService service;
