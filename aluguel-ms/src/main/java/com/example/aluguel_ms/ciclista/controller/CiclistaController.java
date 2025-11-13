@@ -56,14 +56,14 @@ public class CiclistaController {
     }
 
     @GetMapping("/{idCiclista}")
-    public ResponseEntity<?> buscarCiclista(@PathVariable Long idCiclista) {
+    public ResponseEntity<?> buscarCiclista(@PathVariable Integer idCiclista) {
         return service.buscarPorId(idCiclista)
                 .<ResponseEntity<?>>map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(404).body("Ciclista não encontrado"));
     }
 
     @PutMapping("/{idCiclista}")
-    public ResponseEntity<?> editarCiclista(@PathVariable Long idCiclista, @RequestBody Map<String, Object> ciclistaMap) {
+    public ResponseEntity<?> editarCiclista(@PathVariable Integer idCiclista, @RequestBody Map<String, Object> ciclistaMap) {
         Ciclista dadosAtualizados = Ciclista.fromMap(ciclistaMap);
         Ciclista atualizado = service.atualizarCiclista(idCiclista, dadosAtualizados);
         if (atualizado != null) {
@@ -73,7 +73,7 @@ public class CiclistaController {
     }
 
     @DeleteMapping("/{idCiclista}")
-    public ResponseEntity<?> removerCiclista(@PathVariable Long idCiclista) {
+    public ResponseEntity<?> removerCiclista(@PathVariable Integer idCiclista) {
         boolean removido = service.removerPorId(idCiclista);
         if (removido) {
             return ResponseEntity.ok().build();

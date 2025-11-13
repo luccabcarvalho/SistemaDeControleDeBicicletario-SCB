@@ -10,7 +10,7 @@ public class MeioDePagamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(nullable = false)
     private String nomeTitular;
@@ -26,11 +26,11 @@ public class MeioDePagamento {
 
     public MeioDePagamento() {}
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
