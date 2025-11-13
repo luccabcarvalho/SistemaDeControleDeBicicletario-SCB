@@ -38,7 +38,7 @@ public class FuncionarioController {
     }
 
     @PutMapping("/{matricula}")
-    public ResponseEntity<?> editarFuncionario(@PathVariable String matricula, @RequestBody Funcionario funcionario) {
+    public ResponseEntity<Object> editarFuncionario(@PathVariable String matricula, @RequestBody Funcionario funcionario) {
         java.util.Optional<Funcionario> existente = service.buscarPorMatricula(matricula);
         if (existente.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -53,7 +53,7 @@ public class FuncionarioController {
     }
 
     @DeleteMapping("/{matricula}")
-    public ResponseEntity<?> removerFuncionario(@PathVariable String matricula) {
+    public ResponseEntity<Void> removerFuncionario(@PathVariable String matricula) {
         boolean removido = service.removerPorMatricula(matricula);
         if (!removido) {
             return ResponseEntity.notFound().build();

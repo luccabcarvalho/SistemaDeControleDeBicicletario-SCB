@@ -20,7 +20,7 @@ public class FuncionarioService {
     public Funcionario criarFuncionario(Funcionario funcionario) {
         String matricula;
         do {
-            matricula = "F" + java.util.UUID.randomUUID().toString().replaceAll("-", "").substring(0, 8).toUpperCase();
+            matricula = "F" + java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
         } while (repository.findByMatricula(matricula).isPresent());
         funcionario.setMatricula(matricula);
         return repository.save(funcionario);

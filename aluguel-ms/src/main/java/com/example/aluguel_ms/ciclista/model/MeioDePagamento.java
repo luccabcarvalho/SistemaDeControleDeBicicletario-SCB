@@ -24,7 +24,9 @@ public class MeioDePagamento {
     @Column(nullable = false)
     private String cvv;
 
-    public MeioDePagamento() {}
+    public MeioDePagamento() {
+        // Construtor padrão exigido pelo JPA para a criação de instâncias.
+    }
 
     public Integer getId() {
         return id;
