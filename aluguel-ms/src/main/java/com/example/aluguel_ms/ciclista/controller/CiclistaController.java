@@ -3,22 +3,23 @@ package com.example.aluguel_ms.ciclista.controller;
 import com.example.aluguel_ms.ciclista.model.Ciclista;
 import com.example.aluguel_ms.ciclista.model.MeioDePagamento;
 import com.example.aluguel_ms.ciclista.service.CiclistaService;
-import com.example.aluguel_ms.ciclista.service.EmailServiceFake;
-import com.example.aluguel_ms.ciclista.service.CartaoDeCreditoServiceFake;
+import com.example.aluguel_ms.ciclista.service.EmailService;
+import com.example.aluguel_ms.ciclista.service.CartaoDeCreditoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/ciclista")
-public class ciclistaController {
+public class CiclistaController {
 
     private final CiclistaService service;
-    private final EmailServiceFake emailService;
-    private final CartaoDeCreditoServiceFake cartaoService;
+    private final EmailService emailService;
+    private final CartaoDeCreditoService cartaoService;
 
-    public ciclistaController(CiclistaService service, EmailServiceFake emailService, CartaoDeCreditoServiceFake cartaoService) {
+    public CiclistaController(CiclistaService service, EmailService emailService, CartaoDeCreditoService cartaoService) {
         this.service = service;
         this.emailService = emailService;
         this.cartaoService = cartaoService;
@@ -38,17 +39,45 @@ public class ciclistaController {
         Ciclista ciclista = Ciclista.fromMap(ciclistaMap);
         MeioDePagamento meioDePagamento = MeioDePagamento.fromMap(meioDePagamentoMap);
 
-        // Validação do cartão
         boolean cartaoValido = cartaoService.validarCartao(meioDePagamento);
         if (!cartaoValido) {
             return ResponseEntity.unprocessableEntity().body("Cartão inválido");
         }
 
         Ciclista criado = service.cadastrarCiclista(ciclista, meioDePagamento);
-
-        // Envio de email
         emailService.enviarEmail(ciclista.getEmail(), "Bem-vindo ao sistema!");
 
         return ResponseEntity.status(201).body(criado);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Ciclista>> listarCiclistas() {
+        return ResponseEntity.ok(service.listarTodos());
+    }
+
+    @GetMapping("/{idCiclista}")
+    public ResponseEntity<?> buscarCiclista(@PathVariable Long idCiclista) {
+        return service.buscarPorId(idCiclista)
+                .<ResponseEntity<?>>map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(404).body("Ciclista não encontrado"));
+    }
+
+    @PutMapping("/{idCiclista}")
+    public ResponseEntity<?> editarCiclista(@PathVariable Long idCiclista, @RequestBody Map<String, Object> ciclistaMap) {
+        Ciclista dadosAtualizados = Ciclista.fromMap(ciclistaMap);
+        Ciclista atualizado = service.atualizarCiclista(idCiclista, dadosAtualizados);
+        if (atualizado != null) {
+            return ResponseEntity.ok(atualizado);
+        }
+        return ResponseEntity.status(404).body("Ciclista não encontrado");
+    }
+
+    @DeleteMapping("/{idCiclista}")
+    public ResponseEntity<?> removerCiclista(@PathVariable Long idCiclista) {
+        boolean removido = service.removerPorId(idCiclista);
+        if (removido) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.status(404).body("Ciclista não encontrado");
     }
 }
