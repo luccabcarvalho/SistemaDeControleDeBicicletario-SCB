@@ -30,11 +30,11 @@ public class CiclistaService {
         return repository.findAll();
     }
 
-    public Optional<Ciclista> buscarPorId(Long id) {
+    public Optional<Ciclista> buscarPorId(Integer id) {
         return repository.findById(id);
     }
 
-    public Ciclista atualizarCiclista(Long id, Ciclista dadosAtualizados) {
+    public Ciclista atualizarCiclista(Integer id, Ciclista dadosAtualizados) {
         Optional<Ciclista> existente = repository.findById(id);
         if (existente.isPresent()) {
             Ciclista ciclista = existente.get();
@@ -51,7 +51,7 @@ public class CiclistaService {
         return null;
     }
 
-    public boolean removerPorId(Long id) {
+    public boolean removerPorId(Integer id) {
         Optional<Ciclista> existente = repository.findById(id);
         if (existente.isPresent()) {
             repository.deleteById(id);
