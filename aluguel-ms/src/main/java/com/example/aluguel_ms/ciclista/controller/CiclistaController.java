@@ -39,13 +39,13 @@ public class CiclistaController {
         Ciclista ciclista = Ciclista.fromMap(ciclistaMap);
         MeioDePagamento meioDePagamento = MeioDePagamento.fromMap(meioDePagamentoMap);
 
-        boolean cartaoValido = cartaoService.validarCartao(meioDePagamento);
+        boolean cartaoValido = cartaoService.validarCartao();
         if (!cartaoValido) {
             return ResponseEntity.unprocessableEntity().body("Cartão inválido");
         }
 
         Ciclista criado = service.cadastrarCiclista(ciclista, meioDePagamento);
-        emailService.enviarEmail(ciclista.getEmail(), "Bem-vindo ao sistema!");
+        emailService.enviarEmail();
 
         return ResponseEntity.status(201).body(criado.toString());
     }
