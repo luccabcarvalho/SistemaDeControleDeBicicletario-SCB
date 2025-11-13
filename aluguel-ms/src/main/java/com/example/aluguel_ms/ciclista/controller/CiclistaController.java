@@ -80,4 +80,16 @@ public class CiclistaController {
         }
         return ResponseEntity.status(404).body("Ciclista não encontrado");
     }
+
+    @PostMapping("/{idCiclista}/ativar")
+    public ResponseEntity<String> ativarCiclista(@PathVariable Long idCiclista) {
+        try {
+            service.ativarCiclista(idCiclista);
+
+            return ResponseEntity.ok("Cadastro completo com sucesso!");
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
