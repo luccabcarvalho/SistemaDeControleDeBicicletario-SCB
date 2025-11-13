@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class EmailService {
-    public boolean enviarEmail(String email, String mensagem) {
+    public boolean enviarEmail() {
         return true; // sempre sucesso
     }
 }
