@@ -168,4 +168,38 @@ class CiclistaControllerTest {
         ResponseEntity<?> response = controller.removerCiclista(99);
         assertEquals(404, response.getStatusCodeValue());
     }
+    
+        @Test
+        void testAtivarCiclistaSucesso() {
+            Ciclista ciclista = new Ciclista();
+            ciclista.setId(1);
+            ciclista.setStatus("pendente");
+            when(service.buscarPorId(1)).thenReturn(java.util.Optional.of(ciclista));
+            Ciclista ativado = new Ciclista();
+            ativado.setId(1);
+            ativado.setStatus("ativo");
+            when(service.ativarCiclista(1)).thenReturn(ativado);
+            ResponseEntity<?> response = controller.ativarCiclista(1);
+            assertEquals(200, response.getStatusCodeValue());
+            assertEquals(ativado, response.getBody());
+        }
+    
+        @Test
+        void testAtivarCiclistaJaAtivo() {
+            Ciclista ciclista = new Ciclista();
+            ciclista.setId(2);
+            ciclista.setStatus("ativo");
+            when(service.buscarPorId(2)).thenReturn(java.util.Optional.of(ciclista));
+            ResponseEntity<?> response = controller.ativarCiclista(2);
+            assertEquals(422, response.getStatusCodeValue());
+            assertEquals("Ciclista já está ativo", response.getBody());
+        }
+    
+        @Test
+        void testAtivarCiclistaNaoEncontrado() {
+            when(service.buscarPorId(99)).thenReturn(java.util.Optional.empty());
+            ResponseEntity<?> response = controller.ativarCiclista(99);
+            assertEquals(404, response.getStatusCodeValue());
+            assertEquals("Ciclista não encontrado", response.getBody());
+        }
 }
