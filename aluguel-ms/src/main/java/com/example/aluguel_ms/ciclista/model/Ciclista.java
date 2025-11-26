@@ -40,8 +40,12 @@ public class Ciclista {
     @JoinColumn(name = "meio_de_pagamento_id")
     private MeioDePagamento meioDePagamento;
 
+    @Column(nullable = false)
+    private String status;
+
     public Ciclista() {
         // Construtor padrão exigido pelo JPA para a criação de instâncias.
+        this.status = "pendente";
     }
 
     public Integer getId() {
@@ -124,6 +128,14 @@ public class Ciclista {
         this.meioDePagamento = meioDePagamento;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public static Ciclista fromMap(Map<String, Object> map) {
         Ciclista c = new Ciclista();
         c.nome = (String) map.get("nome");
@@ -137,6 +149,7 @@ public class Ciclista {
         c.email = (String) map.get("email");
         c.urlFotoDocumento = (String) map.get("urlFotoDocumento");
         c.senha = (String) map.get("senha");
+        c.status = "pendente";
         return c;
     }
 }
