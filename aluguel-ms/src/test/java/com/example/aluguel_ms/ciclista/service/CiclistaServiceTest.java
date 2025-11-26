@@ -70,4 +70,37 @@ class CiclistaServiceTest {
         verify(repository).findById(99);
         verify(repository, never()).deleteById(any());
     }
+
+        @Test
+        void testAtivarCiclistaSucesso() {
+            Ciclista c = new Ciclista();
+            c.setId(10);
+            c.setStatus("pendente");
+            when(repository.findById(10)).thenReturn(Optional.of(c));
+            when(repository.save(c)).thenReturn(c);
+            Ciclista result = service.ativarCiclista(10);
+            assertEquals("ativo", result.getStatus());
+            verify(repository).findById(10);
+            verify(repository).save(c);
+        }
+
+        @Test
+        void testAtivarCiclistaJaAtivo() {
+            Ciclista c = new Ciclista();
+            c.setId(11);
+            c.setStatus("ativo");
+            when(repository.findById(11)).thenReturn(Optional.of(c));
+            Ciclista result = service.ativarCiclista(11);
+            assertEquals("ativo", result.getStatus());
+            verify(repository).findById(11);
+            verify(repository, never()).save(any());
+        }
+
+        @Test
+        void testAtivarCiclistaNaoEncontrado() {
+            when(repository.findById(99)).thenReturn(Optional.empty());
+            Ciclista result = service.ativarCiclista(99);
+            assertNull(result);
+            verify(repository).findById(99);
+        }
 }

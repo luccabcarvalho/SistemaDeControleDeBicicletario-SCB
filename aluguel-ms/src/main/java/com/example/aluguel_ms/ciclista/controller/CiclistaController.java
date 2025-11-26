@@ -31,6 +31,21 @@ public class CiclistaController {
         return ResponseEntity.ok(existe);
     }
 
+        @PostMapping("/{idCiclista}/ativar")
+        public ResponseEntity<?> ativarCiclista(@PathVariable Integer idCiclista) {
+            Ciclista ciclista = service.ativarCiclista(idCiclista);
+            if (ciclista == null) {
+                return ResponseEntity.status(404).body("Ciclista não encontrado");
+            }
+            if ("ativo".equals(ciclista.getStatus())) {
+                return ResponseEntity.unprocessableEntity().body("Ciclista já está ativo");
+            }
+            if ("pendente".equals(ciclista.getStatus())) {
+                return ResponseEntity.ok(ciclista);
+            }
+            return ResponseEntity.unprocessableEntity().body("Não foi possível ativar o ciclista");
+        }
+
     @PostMapping
     public ResponseEntity<String> cadastrarCiclista(@RequestBody Map<String, Object> payload) {
         Map<String, Object> ciclistaMap = (Map<String, Object>) payload.get("ciclista");

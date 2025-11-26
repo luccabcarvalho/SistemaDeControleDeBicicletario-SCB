@@ -26,6 +26,19 @@ public class CiclistaService {
         return repository.save(ciclista);
     }
 
+        public Ciclista ativarCiclista(Integer id) {
+            Optional<Ciclista> existente = repository.findById(id);
+            if (existente.isPresent()) {
+                Ciclista ciclista = existente.get();
+                if ("pendente".equals(ciclista.getStatus())) {
+                    ciclista.setStatus("ativo");
+                    repository.save(ciclista);
+                }
+                return ciclista;
+            }
+            return null;
+        }
+
     public List<Ciclista> listarTodos() {
         return repository.findAll();
     }
