@@ -55,7 +55,7 @@ public class CiclistaController {
         Ciclista ciclista = Ciclista.fromMap(ciclistaMap);
         MeioDePagamento meioDePagamento = MeioDePagamento.fromMap(meioDePagamentoMap);
 
-        boolean cartaoValido = cartaoService.validarCartao();
+        boolean cartaoValido = cartaoService.validarCartao(meioDePagamento);
         if (!cartaoValido) {
             return ResponseEntity.unprocessableEntity().body("Cartão inválido");
         }
@@ -95,5 +95,37 @@ public class CiclistaController {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.status(404).build();
+    }
+
+    @GetMapping("/cartaoDeCredito/{idCiclista}")
+    public ResponseEntity<?> getCartaoDeCredito(@PathVariable Integer idCiclista) {
+        MeioDePagamento meio = service.getMeioDePagamento(idCiclista);
+        if (meio == null) {
+            return ResponseEntity.status(404).body("Ciclista não encontrado");
+        }
+        return ResponseEntity.ok(meio);
+    }
+
+    @PutMapping("/cartaoDeCredito/{idCiclista}")
+    public ResponseEntity<?> alterarCartaoDeCredito(@PathVariable Integer idCiclista, @RequestBody Map<String, Object> payload) {
+        MeioDePagamento novoCartao;
+        try {
+            novoCartao = MeioDePagamento.fromMap(payload);
+        } catch (Exception e) {
+            return ResponseEntity.unprocessableEntity().body(List.of("Dados inválidos"));
+        }
+        boolean cartaoValido = cartaoService.validarCartao(novoCartao);
+        if (!cartaoValido) {
+            return ResponseEntity.unprocessableEntity().body(List.of("Cartão recusado"));
+        }
+        boolean cartaoAtualizado = service.atualizarMeioDePagamento(idCiclista, novoCartao);
+        if (!cartaoAtualizado) {
+            return ResponseEntity.status(404).body("Ciclista não encontrado");
+        }
+        boolean emailEnviado = emailService.enviarEmail();
+        if (!emailEnviado) {
+            return ResponseEntity.unprocessableEntity().body(List.of("Não foi possível enviar o email"));
+        }
+        return ResponseEntity.ok().build();
     }
 }
