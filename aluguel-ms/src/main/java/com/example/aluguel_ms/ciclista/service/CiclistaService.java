@@ -26,6 +26,22 @@ public class CiclistaService {
         return repository.save(ciclista);
     }
 
+    public MeioDePagamento getMeioDePagamento(Integer idCiclista) {
+        Optional<Ciclista> ciclista = repository.findById(idCiclista);
+        return ciclista.map(Ciclista::getMeioDePagamento).orElse(null);
+    }
+
+    public boolean atualizarMeioDePagamento(Integer idCiclista, MeioDePagamento novoCartao) {
+        Optional<Ciclista> ciclistaOpt = repository.findById(idCiclista);
+        if (ciclistaOpt.isPresent()) {
+            Ciclista ciclista = ciclistaOpt.get();
+            ciclista.setMeioDePagamento(novoCartao);
+            repository.save(ciclista);
+            return true;
+        }
+        return false;
+    }
+
     public Ciclista ativarCiclista(Integer id) {
         Optional<Ciclista> existente = repository.findById(id);
         if (existente.isPresent()) {
