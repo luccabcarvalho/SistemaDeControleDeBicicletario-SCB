@@ -19,6 +19,8 @@ public class CiclistaController {
     private final EmailService emailService;
     private final CartaoDeCreditoService cartaoService;
 
+    private static final String CICLISTA_NAO_ENCONTRADO = "Ciclista não encontrado";
+
     public CiclistaController(CiclistaService service, EmailService emailService, CartaoDeCreditoService cartaoService) {
         this.service = service;
         this.emailService = emailService;
@@ -32,10 +34,10 @@ public class CiclistaController {
     }
 
     @PostMapping("/{idCiclista}/ativar")
-    public ResponseEntity<?> ativarCiclista(@PathVariable Integer idCiclista) {
+    public ResponseEntity<Object> ativarCiclista(@PathVariable Integer idCiclista) {
         Ciclista ciclista = service.buscarPorId(idCiclista).orElse(null);
         if (ciclista == null) {
-            return ResponseEntity.status(404).body("Ciclista não encontrado");
+            return ResponseEntity.status(404).body(CICLISTA_NAO_ENCONTRADO);
         }
         if ("ativo".equals(ciclista.getStatus())) {
             return ResponseEntity.unprocessableEntity().body("Ciclista já está ativo");
@@ -98,16 +100,16 @@ public class CiclistaController {
     }
 
     @GetMapping("/cartaoDeCredito/{idCiclista}")
-    public ResponseEntity<?> getCartaoDeCredito(@PathVariable Integer idCiclista) {
+    public ResponseEntity<Object> getCartaoDeCredito(@PathVariable Integer idCiclista) {
         MeioDePagamento meio = service.getMeioDePagamento(idCiclista);
         if (meio == null) {
-            return ResponseEntity.status(404).body("Ciclista não encontrado");
+            return ResponseEntity.status(404).body(CICLISTA_NAO_ENCONTRADO);
         }
         return ResponseEntity.ok(meio);
     }
 
     @PutMapping("/cartaoDeCredito/{idCiclista}")
-    public ResponseEntity<?> alterarCartaoDeCredito(@PathVariable Integer idCiclista, @RequestBody Map<String, Object> payload) {
+    public ResponseEntity<Object> alterarCartaoDeCredito(@PathVariable Integer idCiclista, @RequestBody Map<String, Object> payload) {
         MeioDePagamento novoCartao;
         try {
             novoCartao = MeioDePagamento.fromMap(payload);
@@ -120,7 +122,7 @@ public class CiclistaController {
         }
         boolean cartaoAtualizado = service.atualizarMeioDePagamento(idCiclista, novoCartao);
         if (!cartaoAtualizado) {
-            return ResponseEntity.status(404).body("Ciclista não encontrado");
+            return ResponseEntity.status(404).body(CICLISTA_NAO_ENCONTRADO);
         }
         boolean emailEnviado = emailService.enviarEmail();
         if (!emailEnviado) {
