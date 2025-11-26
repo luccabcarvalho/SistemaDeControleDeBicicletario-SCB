@@ -46,7 +46,7 @@ class CiclistaControllerTest {
         payload.put("ciclista", ciclistaMap);
         payload.put("meioDePagamento", meioDePagamentoMap);
         Ciclista ciclistaCriado = new Ciclista();
-        when(cartaoService.validarCartao()).thenReturn(true);
+        when(cartaoService.validarCartao(any())).thenReturn(true);
         when(service.cadastrarCiclista(any(), any())).thenReturn(ciclistaCriado);
     when(emailService.enviarEmail()).thenReturn(true);
         ResponseEntity<String> response = controller.cadastrarCiclista(payload);
@@ -72,7 +72,7 @@ class CiclistaControllerTest {
         Map<String, Object> payload = new HashMap<>();
         payload.put("ciclista", ciclistaMap);
         payload.put("meioDePagamento", meioDePagamentoMap);
-        when(cartaoService.validarCartao()).thenReturn(false);
+        when(cartaoService.validarCartao(any())).thenReturn(false);
     when(emailService.enviarEmail()).thenReturn(true);
         ResponseEntity<String> response = controller.cadastrarCiclista(payload);
         assertEquals(422, response.getStatusCodeValue());
