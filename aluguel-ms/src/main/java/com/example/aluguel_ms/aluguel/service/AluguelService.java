@@ -14,6 +14,61 @@ public class AluguelService {
         this.aluguelRepository = aluguelRepository;
     }
 
+    public java.util.Optional<com.example.aluguel_ms.aluguel.model.Devolucao> devolverBicicleta(Integer idTranca, Integer idBicicleta) {
+        // Comportamento falso para validação de tranca e bicicleta
+        if (idTranca == null || idTranca <= 0 || idBicicleta == null || idBicicleta <= 0) {
+            return java.util.Optional.empty();
+        }
+        // Simular busca do aluguel em aberto
+        com.example.aluguel_ms.aluguel.model.Aluguel aluguel = aluguelRepository.findAll().stream()
+            .filter(a -> a.getBicicleta() != null && a.getBicicleta().equals(idBicicleta) && a.getHoraFim() == null)
+            .findFirst().orElse(null);
+        if (aluguel == null) {
+            return java.util.Optional.empty();
+        }
+        // Simular status da bicicleta e tranca
+        String statusBicicleta = "em uso";
+        String statusTranca = "disponível";
+        // Simular cálculo de valor extra
+        java.time.LocalDateTime horaInicio = aluguel.getHoraInicio();
+        java.time.LocalDateTime horaFim = java.time.LocalDateTime.now();
+        long minutos = java.time.Duration.between(horaInicio, horaFim).toMinutes();
+        double valorExtra = 0.0;
+        if (minutos > 120) {
+            valorExtra = Math.ceil((minutos - 120) / 30.0) * 5.0;
+        }
+        // Simular cobrança e pagamento
+        boolean pagamentoAutorizado = true;
+        // Simular email do ciclista
+        String emailCiclista = "ciclista@exemplo.com";
+        // Simular cartão de cobrança
+        String cartaoCobranca = "1234-5678-9012-3456";
+        // Simular reparo solicitado
+        boolean reparoSolicitado = false;
+        // Simular alteração de status
+        statusBicicleta = valorExtra > 0 ? "disponível" : statusBicicleta;
+        statusTranca = "ocupada";
+        // Atualizar aluguel
+        aluguel.setHoraFim(horaFim);
+        aluguelRepository.save(aluguel);
+        // Montar devolução
+        com.example.aluguel_ms.aluguel.model.Devolucao devolucao = new com.example.aluguel_ms.aluguel.model.Devolucao();
+        devolucao.setIdBicicleta(idBicicleta);
+        devolucao.setIdTranca(idTranca);
+        devolucao.setDataHoraDevolucao(horaFim);
+        devolucao.setDataHoraCobranca(horaFim);
+        devolucao.setValorExtra(valorExtra);
+        devolucao.setCartaoCobranca(cartaoCobranca);
+        devolucao.setStatusBicicleta(statusBicicleta);
+        devolucao.setStatusTranca(statusTranca);
+        devolucao.setEmailCiclista(emailCiclista);
+        devolucao.setReparoSolicitado(reparoSolicitado);
+        devolucao.setPagamentoAutorizado(pagamentoAutorizado);
+        // Simular envio de email
+        // (comportamento falso)
+        return java.util.Optional.of(devolucao);
+    }
+
     // dependências externas
     private boolean validarTranca(Integer trancaId) {
         // tranca existe e está "ocupada"
