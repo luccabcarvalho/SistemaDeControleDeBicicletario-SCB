@@ -22,11 +22,11 @@ public class AluguelController {
             Integer ciclistaId = (Integer) payload.get("ciclista");
             Integer trancaId = (Integer) payload.get("trancaInicio");
             if (ciclistaId == null || trancaId == null) {
-                return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST).body(DADOS_INVALIDOS);
+                return ResponseEntity.status(org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY).body(DADOS_INVALIDOS);
             }
 
             return aluguelService.alugarBicicleta(ciclistaId, trancaId)
-                .map(aluguel -> ResponseEntity.status(org.springframework.http.HttpStatus.OK).body(aluguel))
+                .map(aluguel -> ResponseEntity.status(org.springframework.http.HttpStatus.OK).body((Object) aluguel))
                 .orElseGet(() -> ResponseEntity.status(org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY).body(DADOS_INVALIDOS));
         } catch (Exception e) {
             return ResponseEntity.status(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR).body(DADOS_INVALIDOS);

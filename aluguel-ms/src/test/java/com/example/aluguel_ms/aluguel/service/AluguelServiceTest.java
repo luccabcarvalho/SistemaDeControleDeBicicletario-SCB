@@ -21,10 +21,10 @@ class AluguelServiceTest {
     @Test
     void testAlugarBicicletaSucesso() {
         when(aluguelRepository.save(any())).thenAnswer(i -> i.getArgument(0));
-        Optional<Aluguel> result = aluguelService.alugarBicicleta(1, 2);
+        Optional<Aluguel> result = aluguelService.alugarBicicleta(2, 2);
         assertTrue(result.isPresent());
         Aluguel aluguel = result.get();
-        assertEquals(1, aluguel.getCiclista());
+        assertEquals(2, aluguel.getCiclista());
         assertEquals(102, aluguel.getBicicleta());
         assertEquals(2, aluguel.getTrancaInicio());
         assertNotNull(aluguel.getHoraInicio());
