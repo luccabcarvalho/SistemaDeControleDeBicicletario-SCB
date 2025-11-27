@@ -20,15 +20,15 @@ public class AluguelController {
     public ResponseEntity<Object> devolverBicicleta(@RequestBody Map<String, Object> payload) {
         Integer idTranca = (Integer) payload.get("idTranca");
         Integer idBicicleta = (Integer) payload.get("idBicicleta");
-        if (idTranca == null || idBicicleta == null) {
-            return ResponseEntity.unprocessableEntity().body(java.util.List.of(new com.example.aluguel_ms.aluguel.model.Erro("Dados Inválidos")));
-        }
-        var result = aluguelService.devolverBicicleta(idTranca, idBicicleta);
-        if (result.isPresent()) {
-            return ResponseEntity.ok(result.get());
-        } else {
-            return ResponseEntity.unprocessableEntity().body(java.util.List.of(new com.example.aluguel_ms.aluguel.model.Erro("Dados Inválidos")));
-        }
+            if (idTranca == null || idBicicleta == null) {
+                return ResponseEntity.unprocessableEntity().body(java.util.List.of(new com.example.aluguel_ms.aluguel.model.Erro(DADOS_INVALIDOS)));
+            }
+            var result = aluguelService.devolverBicicleta(idTranca, idBicicleta);
+            if (result.isPresent()) {
+                return ResponseEntity.ok(result.get());
+            } else {
+                return ResponseEntity.unprocessableEntity().body(java.util.List.of(new com.example.aluguel_ms.aluguel.model.Erro(DADOS_INVALIDOS)));
+            }
     }
 
     @PostMapping
