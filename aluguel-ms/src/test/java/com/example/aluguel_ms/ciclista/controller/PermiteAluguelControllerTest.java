@@ -25,6 +25,7 @@ class PermiteAluguelControllerTest {
         c.setId(1);
         c.setStatus("ativo");
         when(service.buscarPorId(1)).thenReturn(Optional.of(c));
+        when(service.ciclistaSemAluguelEmAberto(1)).thenReturn(true);
         ResponseEntity<?> response = controller.permiteAluguel(1);
         assertEquals(200, response.getStatusCodeValue());
         assertEquals(true, response.getBody());

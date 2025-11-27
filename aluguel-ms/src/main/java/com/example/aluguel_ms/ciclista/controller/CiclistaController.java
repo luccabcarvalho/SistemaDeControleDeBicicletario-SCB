@@ -27,14 +27,29 @@ public class CiclistaController {
         this.cartaoService = cartaoService;
     }
 
+
     @GetMapping("/{idCiclista}/permiteAluguel")
     public ResponseEntity<?> permiteAluguel(@PathVariable Integer idCiclista) {
         return service.buscarPorId(idCiclista)
                 .map(ciclista -> {
-                    boolean podeAlugar = "ativo".equals(ciclista.getStatus());
-                    return ResponseEntity.ok(podeAlugar);
+                    boolean ativo = "ativo".equals(ciclista.getStatus());
+                    boolean semAluguel = service.ciclistaSemAluguelEmAberto(idCiclista);
+                    boolean podeAlugar = ativo && semAluguel;
+                    return ResponseEntity.ok((Object)podeAlugar);
                 })
-                .orElseGet(() -> ResponseEntity.status(404).body(CICLISTA_NAO_ENCONTRADO));
+                .orElseGet(() -> ResponseEntity.status(404).body((Object)CICLISTA_NAO_ENCONTRADO));
+    }
+
+    @GetMapping("/{idCiclista}/bicicletaAlugada")
+    public ResponseEntity<?> bicicletaAlugada(@PathVariable Integer idCiclista) {
+        if (!service.buscarPorId(idCiclista).isPresent()) {
+            return ResponseEntity.status(404).body(Map.of("erro", CICLISTA_NAO_ENCONTRADO));
+        }
+        Object bicicleta = service.getBicicletaAlugada(idCiclista);
+        if (bicicleta == null) {
+            return ResponseEntity.ok().body(null);
+        }
+        return ResponseEntity.ok(bicicleta);
     }
 
     @GetMapping("/existeEmail/{email}")

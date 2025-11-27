@@ -11,6 +11,68 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class CiclistaControllerTest {
+        @Test
+        void testPermiteAluguelCiclistaAtivoSemAluguel() {
+            Ciclista c = new Ciclista();
+            c.setId(1);
+            c.setStatus("ativo");
+            when(service.buscarPorId(1)).thenReturn(Optional.of(c));
+            when(service.ciclistaSemAluguelEmAberto(1)).thenReturn(true);
+            ResponseEntity<?> response = controller.permiteAluguel(1);
+            assertEquals(200, response.getStatusCodeValue());
+            assertEquals(true, response.getBody());
+        }
+
+        @Test
+        void testPermiteAluguelCiclistaAtivoComAluguel() {
+            Ciclista c = new Ciclista();
+            c.setId(2);
+            c.setStatus("ativo");
+            when(service.buscarPorId(2)).thenReturn(Optional.of(c));
+            when(service.ciclistaSemAluguelEmAberto(2)).thenReturn(false);
+            ResponseEntity<?> response = controller.permiteAluguel(2);
+            assertEquals(200, response.getStatusCodeValue());
+            assertEquals(false, response.getBody());
+        }
+
+        @Test
+        void testPermiteAluguelCiclistaNaoEncontrado() {
+            when(service.buscarPorId(99)).thenReturn(Optional.empty());
+            ResponseEntity<?> response = controller.permiteAluguel(99);
+            assertEquals(404, response.getStatusCodeValue());
+            assertEquals("Ciclista não encontrado", response.getBody());
+        }
+
+        @Test
+        void testBicicletaAlugadaCiclistaNaoEncontrado() {
+            when(service.buscarPorId(99)).thenReturn(Optional.empty());
+            ResponseEntity<?> response = controller.bicicletaAlugada(99);
+            assertEquals(404, response.getStatusCodeValue());
+            assertTrue(response.getBody().toString().contains("Ciclista não encontrado"));
+        }
+
+        @Test
+        void testBicicletaAlugadaSemAluguel() {
+            Ciclista c = new Ciclista();
+            c.setId(1);
+            when(service.buscarPorId(1)).thenReturn(Optional.of(c));
+            when(service.getBicicletaAlugada(1)).thenReturn(null);
+            ResponseEntity<?> response = controller.bicicletaAlugada(1);
+            assertEquals(200, response.getStatusCodeValue());
+            assertNull(response.getBody());
+        }
+
+        @Test
+        void testBicicletaAlugadaComAluguel() {
+            Ciclista c = new Ciclista();
+            c.setId(1);
+            when(service.buscarPorId(1)).thenReturn(Optional.of(c));
+            Map<String, Object> bicicleta = Map.of("id", 123);
+            when(service.getBicicletaAlugada(1)).thenReturn(bicicleta);
+            ResponseEntity<?> response = controller.bicicletaAlugada(1);
+            assertEquals(200, response.getStatusCodeValue());
+            assertEquals(bicicleta, response.getBody());
+        }
     @Test
     void testExisteEmailTrue() {
         when(service.existeEmail("teste@teste.com")).thenReturn(true);
