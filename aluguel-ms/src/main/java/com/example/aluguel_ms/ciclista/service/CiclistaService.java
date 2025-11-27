@@ -1,5 +1,6 @@
 package com.example.aluguel_ms.ciclista.service;
 
+
 import com.example.aluguel_ms.ciclista.model.Ciclista;
 import com.example.aluguel_ms.ciclista.model.MeioDePagamento;
 import com.example.aluguel_ms.ciclista.repository.CiclistaRepository;
@@ -7,9 +8,30 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
 
 @Service
 public class CiclistaService {
+    @org.springframework.beans.factory.annotation.Autowired
+    private com.example.aluguel_ms.aluguel.repository.AluguelRepository aluguelRepository;
+
+    public void setAluguelRepository(com.example.aluguel_ms.aluguel.repository.AluguelRepository aluguelRepository) {
+        this.aluguelRepository = aluguelRepository;
+    }
+    public boolean ciclistaSemAluguelEmAberto(Integer idCiclista) {
+        if (idCiclista == null) return false;
+        return aluguelRepository.findAll().stream()
+            .noneMatch(a -> a.getCiclista() != null && a.getCiclista().equals(idCiclista) && a.getHoraFim() == null);
+    }
+
+    public Object getBicicletaAlugada(Integer idCiclista) {
+        if (idCiclista == null || aluguelRepository == null) return null;
+        return aluguelRepository.findAll().stream()
+            .filter(a -> a.getCiclista() != null && a.getCiclista().equals(idCiclista) && a.getHoraFim() == null)
+            .findFirst()
+            .map(a -> Map.of("id", a.getBicicleta()))
+            .orElse(null);
+    }
 
     private final CiclistaRepository repository;
 

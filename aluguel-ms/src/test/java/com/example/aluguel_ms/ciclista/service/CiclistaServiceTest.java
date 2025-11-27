@@ -10,6 +10,44 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class CiclistaServiceTest {
+    @Mock
+    private com.example.aluguel_ms.aluguel.repository.AluguelRepository aluguelRepository;
+    @Test
+    void testCiclistaSemAluguelEmAbertoTrue() {
+        when(aluguelRepository.findAll()).thenReturn(java.util.Collections.emptyList());
+        boolean result = service.ciclistaSemAluguelEmAberto(1);
+        assertTrue(result);
+    }
+
+    @Test
+    void testCiclistaSemAluguelEmAbertoFalse() {
+        com.example.aluguel_ms.aluguel.model.Aluguel aluguel = new com.example.aluguel_ms.aluguel.model.Aluguel();
+        aluguel.setCiclista(1);
+        aluguel.setHoraFim(null);
+        when(aluguelRepository.findAll()).thenReturn(java.util.List.of(aluguel));
+        boolean result = service.ciclistaSemAluguelEmAberto(1);
+        assertFalse(result);
+    }
+
+    @Test
+    void testGetBicicletaAlugadaNull() {
+        when(aluguelRepository.findAll()).thenReturn(java.util.Collections.emptyList());
+        Object result = service.getBicicletaAlugada(1);
+        assertNull(result);
+    }
+
+    @Test
+    void testGetBicicletaAlugadaComAluguel() {
+        com.example.aluguel_ms.aluguel.model.Aluguel aluguel = new com.example.aluguel_ms.aluguel.model.Aluguel();
+        aluguel.setCiclista(1);
+        aluguel.setBicicleta(123);
+        aluguel.setHoraFim(null);
+        when(aluguelRepository.findAll()).thenReturn(java.util.List.of(aluguel));
+        Object result = service.getBicicletaAlugada(1);
+        assertNotNull(result);
+        assertTrue(result instanceof Map);
+        assertEquals(123, ((Map<?,?>)result).get("id"));
+    }
 
     @Mock
     private CiclistaRepository repository;
@@ -20,6 +58,7 @@ class CiclistaServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        service.setAluguelRepository(aluguelRepository);
     }
 
     @Test
