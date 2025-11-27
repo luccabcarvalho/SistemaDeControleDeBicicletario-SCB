@@ -9,6 +9,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/aluguel")
 public class AluguelController {
+        private static final String DADOS_INVALIDOS = "Dados Inválidos";
     private final AluguelService aluguelService;
 
     public AluguelController(AluguelService aluguelService) {
@@ -16,19 +17,19 @@ public class AluguelController {
     }
 
     @PostMapping
-    public ResponseEntity<?> alugarBicicleta(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<Object> alugarBicicleta(@RequestBody Map<String, Object> payload) {
         try {
             Integer ciclistaId = (Integer) payload.get("ciclista");
             Integer trancaId = (Integer) payload.get("trancaInicio");
             if (ciclistaId == null || trancaId == null) {
-                return ResponseEntity.unprocessableEntity().body("Dados Inválidos");
+                return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST).body(DADOS_INVALIDOS);
             }
 
-                return aluguelService.alugarBicicleta(ciclistaId, trancaId)
-                    .map(aluguel -> ResponseEntity.ok((Object) aluguel))
-                    .orElseGet(() -> ResponseEntity.unprocessableEntity().body("Dados Inválidos"));
+            return aluguelService.alugarBicicleta(ciclistaId, trancaId)
+                .map(aluguel -> ResponseEntity.status(org.springframework.http.HttpStatus.OK).body(aluguel))
+                .orElseGet(() -> ResponseEntity.status(org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY).body(DADOS_INVALIDOS));
         } catch (Exception e) {
-            return ResponseEntity.unprocessableEntity().body("Dados Inválidos");
+            return ResponseEntity.status(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR).body(DADOS_INVALIDOS);
         }
     }
 }

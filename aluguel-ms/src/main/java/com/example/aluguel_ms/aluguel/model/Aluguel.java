@@ -31,7 +31,9 @@ public class Aluguel {
     @Column(nullable = false)
     private Integer cobranca;
 
-    public Aluguel() {}
+    public Aluguel() {
+        // JPA exige um construtor público sem argumentos para instanciar entidades
+    }
 
     // Getters e setters
     public Integer getId() { return id; }
