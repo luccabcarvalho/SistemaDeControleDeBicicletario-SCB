@@ -27,6 +27,16 @@ public class CiclistaController {
         this.cartaoService = cartaoService;
     }
 
+    @GetMapping("/{idCiclista}/permiteAluguel")
+    public ResponseEntity<?> permiteAluguel(@PathVariable Integer idCiclista) {
+        return service.buscarPorId(idCiclista)
+                .map(ciclista -> {
+                    boolean podeAlugar = "ativo".equals(ciclista.getStatus());
+                    return ResponseEntity.ok(podeAlugar);
+                })
+                .orElseGet(() -> ResponseEntity.status(404).body(CICLISTA_NAO_ENCONTRADO));
+    }
+
     @GetMapping("/existeEmail/{email}")
     public ResponseEntity<Boolean> existeEmail(@PathVariable String email) {
         boolean existe = service.existeEmail(email);
