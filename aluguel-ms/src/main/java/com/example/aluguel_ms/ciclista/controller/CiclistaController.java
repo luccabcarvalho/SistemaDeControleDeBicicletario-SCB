@@ -29,7 +29,7 @@ public class CiclistaController {
 
 
     @GetMapping("/{idCiclista}/permiteAluguel")
-    public ResponseEntity<?> permiteAluguel(@PathVariable Integer idCiclista) {
+    public ResponseEntity<Object> permiteAluguel(@PathVariable Integer idCiclista) {
         return service.buscarPorId(idCiclista)
                 .map(ciclista -> {
                     boolean ativo = "ativo".equals(ciclista.getStatus());
@@ -41,7 +41,7 @@ public class CiclistaController {
     }
 
     @GetMapping("/{idCiclista}/bicicletaAlugada")
-    public ResponseEntity<?> bicicletaAlugada(@PathVariable Integer idCiclista) {
+    public ResponseEntity<Object> bicicletaAlugada(@PathVariable Integer idCiclista) {
         if (!service.buscarPorId(idCiclista).isPresent()) {
             return ResponseEntity.status(404).body(Map.of("erro", CICLISTA_NAO_ENCONTRADO));
         }
