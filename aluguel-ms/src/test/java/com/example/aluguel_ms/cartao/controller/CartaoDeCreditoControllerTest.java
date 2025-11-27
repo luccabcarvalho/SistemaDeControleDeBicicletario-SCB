@@ -1,4 +1,4 @@
-package com.example.aluguel_ms.ciclista.controller;
+package com.example.aluguel_ms.cartao.controller;
 
 import com.example.aluguel_ms.ciclista.model.MeioDePagamento;
 import com.example.aluguel_ms.ciclista.service.CiclistaService;
@@ -19,12 +19,12 @@ class CartaoDeCreditoControllerTest {
     private EmailService emailService;
     @Mock
     private CartaoDeCreditoService cartaoService;
-    private CiclistaController controller;
+    private CartaoDeCreditoController controller;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        controller = new CiclistaController(service, emailService, cartaoService);
+        controller = new CartaoDeCreditoController(service, emailService, cartaoService);
     }
 
     @Test

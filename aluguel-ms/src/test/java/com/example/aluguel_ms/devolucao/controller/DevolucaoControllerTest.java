@@ -1,4 +1,4 @@
-package com.example.aluguel_ms.aluguel.controller;
+package com.example.aluguel_ms.devolucao.controller;
 
 import com.example.aluguel_ms.aluguel.model.Devolucao;
 import com.example.aluguel_ms.aluguel.model.Erro;
@@ -14,11 +14,13 @@ import static org.mockito.Mockito.*;
 class DevolucaoControllerTest {
     @Mock
     private AluguelService aluguelService;
-    @InjectMocks
-    private AluguelController aluguelController;
+    private DevolucaoController devolucaoController;
 
     @BeforeEach
-    void setUp() { MockitoAnnotations.openMocks(this); }
+    void setUp() { 
+        MockitoAnnotations.openMocks(this);
+        devolucaoController = new DevolucaoController(aluguelService);
+    }
 
     @Test
     void testDevolverBicicletaSucesso() {
@@ -30,7 +32,7 @@ class DevolucaoControllerTest {
         Map<String, Object> payload = new HashMap<>();
         payload.put("idTranca", 2);
         payload.put("idBicicleta", 1);
-        ResponseEntity<?> response = aluguelController.devolverBicicleta(payload);
+        ResponseEntity<?> response = devolucaoController.devolverBicicleta(payload);
         assertEquals(200, response.getStatusCodeValue());
         assertEquals(devolucao, response.getBody());
     }
@@ -41,7 +43,7 @@ class DevolucaoControllerTest {
         Map<String, Object> payload = new HashMap<>();
         payload.put("idTranca", 2);
         payload.put("idBicicleta", -1);
-        ResponseEntity<?> response = aluguelController.devolverBicicleta(payload);
+        ResponseEntity<?> response = devolucaoController.devolverBicicleta(payload);
         assertEquals(422, response.getStatusCodeValue());
         assertTrue(response.getBody() instanceof List);
         List<?> erros = (List<?>) response.getBody();
@@ -53,7 +55,7 @@ class DevolucaoControllerTest {
     void testDevolverBicicletaPayloadIncompleto() {
         Map<String, Object> payload = new HashMap<>();
         payload.put("idTranca", 2);
-        ResponseEntity<?> response = aluguelController.devolverBicicleta(payload);
+        ResponseEntity<?> response = devolucaoController.devolverBicicleta(payload);
         assertEquals(422, response.getStatusCodeValue());
         assertTrue(response.getBody() instanceof List);
         List<?> erros = (List<?>) response.getBody();
