@@ -2,7 +2,10 @@ package com.example.aluguel_ms.aluguel.service;
 
 import com.example.aluguel_ms.aluguel.model.Aluguel;
 import com.example.aluguel_ms.aluguel.repository.AluguelRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.http.MediaType;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -10,91 +13,144 @@ import java.util.Optional;
 public class AluguelService {
     private final AluguelRepository aluguelRepository;
 
-    public AluguelService(AluguelRepository aluguelRepository) {
+    private final WebClient webClient;
+
+    @Value("${equipamento.url}")
+    private String equipamentoUrl;
+
+    @Value("${externo.url}")
+    private String externoUrl;
+
+    public AluguelService(AluguelRepository aluguelRepository, WebClient webClient) {
         this.aluguelRepository = aluguelRepository;
+        this.webClient = webClient;
     }
 
     public java.util.Optional<com.example.aluguel_ms.aluguel.model.Devolucao> devolverBicicleta(Integer idTranca, Integer idBicicleta) {
-        // Comportamento falso para validação de tranca e bicicleta
-        if (idTranca == null || idTranca <= 0 || idBicicleta == null || idBicicleta <= 0) {
-            return java.util.Optional.empty();
-        }
-        // Simular busca do aluguel em aberto
-        com.example.aluguel_ms.aluguel.model.Aluguel aluguel = aluguelRepository.findAll().stream()
-            .filter(a -> a.getBicicleta() != null && a.getBicicleta().equals(idBicicleta) && a.getHoraFim() == null)
-            .findFirst().orElse(null);
-        if (aluguel == null) {
-            return java.util.Optional.empty();
-        }
-        // Simular status da bicicleta e tranca
-        String statusBicicleta = "em uso";
-        String statusTranca = "disponível";
-        // Simular cálculo de valor extra
-        java.time.LocalDateTime horaInicio = aluguel.getHoraInicio();
-        java.time.LocalDateTime horaFim = java.time.LocalDateTime.now();
-        long minutos = java.time.Duration.between(horaInicio, horaFim).toMinutes();
-        double valorExtra = 0.0;
-        if (minutos > 120) {
-            valorExtra = Math.ceil((minutos - 120) / 30.0) * 5.0;
-        }
-        // Simular cobrança e pagamento
-        boolean pagamentoAutorizado = true;
-        // Simular email do ciclista
-        String emailCiclista = "ciclista@exemplo.com";
-        // Simular cartão de cobrança
-        String cartaoCobranca = "1234-5678-9012-3456";
-        // Simular reparo solicitado
-        boolean reparoSolicitado = false;
-        // Simular alteração de status
-        statusBicicleta = valorExtra > 0 ? "disponível" : statusBicicleta;
-        statusTranca = "ocupada";
-        // Atualizar aluguel
-        aluguel.setHoraFim(horaFim);
-        aluguelRepository.save(aluguel);
-        // Montar devolução
-        com.example.aluguel_ms.aluguel.model.Devolucao devolucao = new com.example.aluguel_ms.aluguel.model.Devolucao();
-        devolucao.setIdBicicleta(idBicicleta);
-        devolucao.setIdTranca(idTranca);
-        devolucao.setDataHoraDevolucao(horaFim);
-        devolucao.setDataHoraCobranca(horaFim);
-        devolucao.setValorExtra(valorExtra);
-        devolucao.setCartaoCobranca(cartaoCobranca);
-        devolucao.setStatusBicicleta(statusBicicleta);
-        devolucao.setStatusTranca(statusTranca);
-        devolucao.setEmailCiclista(emailCiclista);
-        devolucao.setReparoSolicitado(reparoSolicitado);
-        devolucao.setPagamentoAutorizado(pagamentoAutorizado);
-        // Simular envio de email
-        // (comportamento falso)
-        return java.util.Optional.of(devolucao);
+        return java.util.Optional.empty();
     }
 
     // dependências externas
     private boolean validarTranca(Integer trancaId) {
-        // tranca existe e está "ocupada"
-        return trancaId != null && trancaId > 0;
+        if (trancaId == null || trancaId <= 0) return false;
+        try {
+            String url = equipamentoUrl + "/tranca/" + trancaId;
+            webClient.get()
+                .uri(url)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(Object.class)
+                .block();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
     private Integer obterBicicletaNaTranca(Integer trancaId) {
-        // retorna id da bicicleta se tranca válida
-        return trancaId != null && trancaId > 0 ? trancaId + 100 : null;
+        if (trancaId == null || trancaId <= 0) return null;
+        try {
+            String url = equipamentoUrl + "/tranca/" + trancaId + "/bicicleta";
+            Map bicicleta = webClient.get()
+                .uri(url)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(Map.class)
+                .block();
+            if (bicicleta != null && bicicleta.get("id") != null) {
+                Object idObj = bicicleta.get("id");
+                if (idObj instanceof Integer) return (Integer) idObj;
+                if (idObj instanceof String) return Integer.valueOf((String) idObj);
+            }
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
     }
     private boolean bicicletaDisponivel(Integer bicicletaId) {
-        // bicicleta existe, está disponível e não está em reparo
-        return bicicletaId != null && bicicletaId > 0;
+        if (bicicletaId == null || bicicletaId <= 0) return false;
+        try {
+            String url = equipamentoUrl + "/bicicleta/" + bicicletaId;
+            Map bicicleta = webClient.get()
+                .uri(url)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(Map.class)
+                .block();
+            if (bicicleta != null && "disponivel".equalsIgnoreCase((String) bicicleta.get("status"))
+                && !"em reparo".equalsIgnoreCase((String) bicicleta.get("status"))) {
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
     }
     private boolean ciclistaPodeAlugar(Integer ciclistaId) {
-        // ciclista existe, está ativo e não tem aluguel em aberto
-        return ciclistaId != null && ciclistaId > 0;
+        if (ciclistaId == null || ciclistaId <= 0) return false;
+        try {
+            String url = equipamentoUrl + "/ciclista/" + ciclistaId + "/permiteAluguel";
+            Map result = webClient.get()
+                .uri(url)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(Map.class)
+                .block();
+            if (result != null && Boolean.TRUE.equals(result.get("permite"))) {
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
     }
     private boolean realizarCobranca(Integer ciclistaId) {
-        // cobrança aprovada apenas para ciclistaId par (fictício, e lidando com a verificação do sonar, que aponta problema de Reliability quando a condição é sempre true neste caso)
-        return ciclistaId != null && ciclistaId % 2 == 0;
+        if (ciclistaId == null || ciclistaId <= 0) return false;
+        try {
+            String url = externoUrl + "/cobranca";
+            Map<String, Object> payload = Map.of("ciclistaId", ciclistaId);
+            Boolean aprovado = webClient.post()
+                .uri(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(payload)
+                .retrieve()
+                .bodyToMono(Boolean.class)
+                .block();
+            return Boolean.TRUE.equals(aprovado);
+        } catch (Exception e) {
+            return false;
+        }
     }
     private void liberarTranca(Integer trancaId) {
-        // tranca liberada
+        if (trancaId == null || trancaId <= 0) return;
+        try {
+            String url = equipamentoUrl + "/tranca/" + trancaId + "/destrancar";
+            webClient.post()
+                .uri(url)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(Void.class)
+                .block();
+        } catch (Exception e) {
+        }
     }
     private void enviarEmail(Integer ciclistaId, Aluguel aluguel) {
-        // email enviado
+        if (ciclistaId == null || aluguel == null) return;
+        try {
+            String url = externoUrl + "/enviarEmail";
+            Map<String, Object> payload = Map.of(
+                "destinatario", "ciclista" + ciclistaId + "@exemplo.com",
+                "assunto", "Confirmação de aluguel de bicicleta",
+                "mensagem", "Seu aluguel foi realizado com sucesso. ID: " + aluguel.getId()
+            );
+            webClient.post()
+                .uri(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(payload)
+                .retrieve()
+                .bodyToMono(Void.class)
+                .block();
+        } catch (Exception e) {
+        }
     }
 
     public Optional<Aluguel> alugarBicicleta(Integer ciclistaId, Integer trancaId) {
