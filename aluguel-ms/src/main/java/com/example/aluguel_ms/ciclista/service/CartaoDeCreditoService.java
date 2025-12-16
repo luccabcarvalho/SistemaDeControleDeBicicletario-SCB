@@ -30,7 +30,7 @@ public class CartaoDeCreditoService {
         // Monta o payload conforme esperado pelo endpoint externo
         Map<String, Object> payload = new HashMap<>();
         payload.put("numero", cartao.getNumero());
-        payload.put("nome", cartao.getNome());
+        payload.put("nome", cartao.getNomeTitular());
         payload.put("validade", cartao.getValidade());
         payload.put("cvv", cartao.getCvv());
 

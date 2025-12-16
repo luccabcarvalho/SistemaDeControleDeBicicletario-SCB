@@ -48,7 +48,15 @@ public class CartaoDeCreditoController {
         if (!cartaoAtualizado) {
             return ResponseEntity.status(404).body(CICLISTA_NAO_ENCONTRADO);
         }
-        boolean emailEnviado = emailService.enviarEmail();
+        // Enviar email de confirmação de alteração de cartão
+        MeioDePagamento meio = service.getMeioDePagamento(idCiclista);
+        String destinatario = (meio != null) ? meio.getNumero() : "";
+        String assunto = "Cartão de crédito atualizado";
+        String mensagem = "Seu cartão de crédito foi atualizado com sucesso.";
+        if (meio != null && meio.getNomeTitular() != null) {
+            destinatario = meio.getNomeTitular();
+        }
+        boolean emailEnviado = emailService.enviarEmail(destinatario, assunto, mensagem);
         if (!emailEnviado) {
             return ResponseEntity.unprocessableEntity().body(List.of("Não foi possível enviar o email"));
         }

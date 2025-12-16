@@ -14,13 +14,16 @@ import java.util.Map;
 
 @Service
 public class CiclistaService {
-    private final WebClient webClient;
+	private final WebClient webClient;
+	private final CiclistaRepository repository;
+	private final com.example.aluguel_ms.aluguel.repository.AluguelRepository aluguelRepository;
 
     @Value("${equipamento.url}")
     private String equipamentoUrl;
 
-    public CiclistaService(CiclistaRepository repository, WebClient webClient) {
+    public CiclistaService(CiclistaRepository repository, com.example.aluguel_ms.aluguel.repository.AluguelRepository aluguelRepository, WebClient webClient) {
         this.repository = repository;
+        this.aluguelRepository = aluguelRepository;
         this.webClient = webClient;
     }
 
@@ -45,7 +48,7 @@ public class CiclistaService {
         }
     }
 
-    private final CiclistaRepository repository;
+    // ...existing code...
 
     public boolean existeEmail(String email) {
         return repository.findByEmail(email).isPresent();

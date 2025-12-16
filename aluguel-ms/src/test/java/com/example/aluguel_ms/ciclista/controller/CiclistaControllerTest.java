@@ -110,7 +110,7 @@ class CiclistaControllerTest {
         Ciclista ciclistaCriado = new Ciclista();
         when(cartaoService.validarCartao(any())).thenReturn(true);
         when(service.cadastrarCiclista(any(), any())).thenReturn(ciclistaCriado);
-    when(emailService.enviarEmail()).thenReturn(true);
+    when(emailService.enviarEmail(anyString(), anyString(), anyString())).thenReturn(true);
         ResponseEntity<String> response = controller.cadastrarCiclista(payload);
         assertEquals(201, response.getStatusCodeValue());
         assertEquals(ciclistaCriado.toString(), response.getBody());
@@ -135,7 +135,7 @@ class CiclistaControllerTest {
         payload.put("ciclista", ciclistaMap);
         payload.put("meioDePagamento", meioDePagamentoMap);
         when(cartaoService.validarCartao(any())).thenReturn(false);
-    when(emailService.enviarEmail()).thenReturn(true);
+    when(emailService.enviarEmail(anyString(), anyString(), anyString())).thenReturn(true);
         ResponseEntity<String> response = controller.cadastrarCiclista(payload);
         assertEquals(422, response.getStatusCodeValue());
         assertEquals("Cartão inválido", response.getBody());
