@@ -54,7 +54,7 @@ class CartaoDeCreditoControllerTest {
         MeioDePagamento novoCartao = MeioDePagamento.fromMap(payload);
         when(cartaoService.validarCartao(any())).thenReturn(true);
         when(service.atualizarMeioDePagamento(eq(1), any())).thenReturn(true);
-        when(emailService.enviarEmail()).thenReturn(true);
+        when(emailService.enviarEmail(anyString(), anyString(), anyString())).thenReturn(true);
         ResponseEntity<?> response = controller.alterarCartaoDeCredito(1, payload);
         assertEquals(200, response.getStatusCodeValue());
     }
@@ -105,7 +105,7 @@ class CartaoDeCreditoControllerTest {
         payload.put("cvv", "123");
         when(cartaoService.validarCartao(any())).thenReturn(true);
         when(service.atualizarMeioDePagamento(eq(1), any())).thenReturn(true);
-        when(emailService.enviarEmail()).thenReturn(false);
+        when(emailService.enviarEmail(anyString(), anyString(), anyString())).thenReturn(false);
         ResponseEntity<?> response = controller.alterarCartaoDeCredito(1, payload);
         assertEquals(422, response.getStatusCodeValue());
         assertTrue(response.getBody().toString().contains("Não foi possível enviar o email"));

@@ -1,4 +1,4 @@
-package com.example.Equipamento.Config;
+package com.example.aluguel_ms.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
