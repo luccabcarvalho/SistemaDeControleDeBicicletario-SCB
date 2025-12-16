@@ -12,12 +12,13 @@ class CartaoDeCreditoServiceTest {
     private final WebClient webClient = Mockito.mock(WebClient.class);
     private final CartaoDeCreditoService service = new CartaoDeCreditoService(webClient);
 
+
     @Test
     void testValidarCartaoValido() {
         MeioDePagamento m = new MeioDePagamento();
         m.setNomeTitular("Joao");
         m.setNumero("1234567890123");
-        m.setValidade(LocalDate.of(2030, 12, 31));
+        m.setValidade(java.time.YearMonth.of(2030, 12));
         m.setCvv("123");
 
         // Mock encadeado do WebClient
@@ -41,7 +42,7 @@ class CartaoDeCreditoServiceTest {
         MeioDePagamento m = new MeioDePagamento();
         m.setNomeTitular("Joao");
         m.setNumero("123"); // muito curto
-        m.setValidade(LocalDate.of(2030, 12, 31));
+        m.setValidade(java.time.YearMonth.of(2030, 12));
         m.setCvv("123");
         assertFalse(service.validarCartao(m));
     }
@@ -51,7 +52,7 @@ class CartaoDeCreditoServiceTest {
         MeioDePagamento m = new MeioDePagamento();
         m.setNomeTitular("Joao");
         m.setNumero("1234567890123");
-        m.setValidade(LocalDate.of(2030, 12, 31));
+        m.setValidade(java.time.YearMonth.of(2030, 12));
         m.setCvv("1"); // muito curto
         assertFalse(service.validarCartao(m));
     }

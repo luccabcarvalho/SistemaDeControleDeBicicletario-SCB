@@ -1,11 +1,13 @@
+
 package com.example.aluguel_ms.ciclista.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.Map;
 
 @Entity
 @Table(name = "meios_de_pagamento")
+
 public class MeioDePagamento {
 
     @Id
@@ -13,20 +15,19 @@ public class MeioDePagamento {
     private Integer id;
 
     @Column(nullable = false)
-    private String nomeTitular;
-
-    @Column(nullable = false, unique = true)
     private String numero;
 
     @Column(nullable = false)
-    private LocalDate validade;
+    private String nomeTitular;
+
+    // Agora espera apenas ano-mês (yyyy-MM)
+    @Column(nullable = false)
+    private YearMonth validade;
 
     @Column(nullable = false)
     private String cvv;
 
-    public MeioDePagamento() {
-        // Construtor padrão exigido pelo JPA para a criação de instâncias.
-    }
+    public MeioDePagamento() {}
 
     public Integer getId() {
         return id;
@@ -34,14 +35,6 @@ public class MeioDePagamento {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getNomeTitular() {
-        return nomeTitular;
-    }
-
-    public void setNomeTitular(String nomeTitular) {
-        this.nomeTitular = nomeTitular;
     }
 
     public String getNumero() {
@@ -52,11 +45,19 @@ public class MeioDePagamento {
         this.numero = numero;
     }
 
-    public LocalDate getValidade() {
+    public String getNomeTitular() {
+        return nomeTitular;
+    }
+
+    public void setNomeTitular(String nomeTitular) {
+        this.nomeTitular = nomeTitular;
+    }
+
+    public YearMonth getValidade() {
         return validade;
     }
 
-    public void setValidade(LocalDate validade) {
+    public void setValidade(YearMonth validade) {
         this.validade = validade;
     }
 
@@ -70,9 +71,13 @@ public class MeioDePagamento {
 
     public static MeioDePagamento fromMap(Map<String, Object> map) {
         MeioDePagamento m = new MeioDePagamento();
-        m.nomeTitular = (String) map.get("nomeTitular");
         m.numero = (String) map.get("numero");
-        m.validade = LocalDate.parse((String) map.get("validade"));
+        m.nomeTitular = (String) map.get("nomeTitular");
+        // Espera string no formato yyyy-MM
+        Object validadeObj = map.get("validade");
+        if (validadeObj != null) {
+            m.validade = YearMonth.parse(validadeObj.toString());
+        }
         m.cvv = (String) map.get("cvv");
         return m;
     }

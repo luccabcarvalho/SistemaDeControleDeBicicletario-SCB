@@ -26,7 +26,8 @@ public class DevolucaoController {
             return ResponseEntity.badRequest().body(DADOS_INVALIDOS);
         }
         return devolucaoService.processarDevolucao(trancaId, bicicletaId)
-            .map(devolucao -> ResponseEntity.ok(devolucao))
+            .map(devolucao -> (Object) devolucao)
+            .map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.unprocessableEntity().body(DADOS_INVALIDOS));
     }
 }

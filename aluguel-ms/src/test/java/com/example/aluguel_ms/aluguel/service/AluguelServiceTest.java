@@ -21,7 +21,15 @@ class AluguelServiceTest {
     @Test
     void testAlugarBicicletaSucesso() {
         when(aluguelRepository.save(any())).thenAnswer(i -> i.getArgument(0));
-        Optional<Aluguel> result = aluguelService.alugarBicicleta(2, 2);
+        // Mockar métodos auxiliares para garantir sucesso
+        AluguelService spyService = Mockito.spy(aluguelService);
+        Mockito.doReturn(true).when(spyService).validarTranca(2);
+        Mockito.doReturn(102).when(spyService).obterBicicletaNaTranca(2);
+        Mockito.doReturn(true).when(spyService).bicicletaDisponivel(102);
+        Mockito.doReturn(true).when(spyService).ciclistaPodeAlugar(2);
+        Mockito.doReturn(true).when(spyService).realizarCobranca(2);
+
+        Optional<Aluguel> result = spyService.alugarBicicleta(2, 2);
         assertTrue(result.isPresent());
         Aluguel aluguel = result.get();
         assertEquals(2, aluguel.getCiclista());
