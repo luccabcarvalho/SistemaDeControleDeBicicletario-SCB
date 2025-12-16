@@ -45,7 +45,7 @@ class CiclistaServiceCartaoTest {
         MeioDePagamento novo = new MeioDePagamento();
         novo.setNomeTitular("Novo");
         novo.setNumero("1234567890123");
-        novo.setValidade(LocalDate.of(2030, 12, 31));
+        novo.setValidade(java.time.YearMonth.of(2030, 12));
         novo.setCvv("123");
         when(repository.findById(1)).thenReturn(Optional.of(c));
         when(repository.save(c)).thenReturn(c);

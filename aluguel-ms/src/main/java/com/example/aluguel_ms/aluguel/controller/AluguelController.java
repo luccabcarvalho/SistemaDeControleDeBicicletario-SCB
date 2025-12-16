@@ -9,13 +9,12 @@ import java.util.Map;
 @RestController
 @RequestMapping("/aluguel")
 public class AluguelController {
-        private static final String DADOS_INVALIDOS = "Dados Inválidos";
+    private static final String DADOS_INVALIDOS = "Dados Inválidos";
     private final AluguelService aluguelService;
 
     public AluguelController(AluguelService aluguelService) {
         this.aluguelService = aluguelService;
     }
-
 
     @PostMapping
     public ResponseEntity<Object> alugarBicicleta(@RequestBody Map<String, Object> payload) {
@@ -33,4 +32,5 @@ public class AluguelController {
             return ResponseEntity.status(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR).body(DADOS_INVALIDOS);
         }
     }
+
 }
