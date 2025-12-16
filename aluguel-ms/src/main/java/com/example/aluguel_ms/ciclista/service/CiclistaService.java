@@ -4,20 +4,26 @@ package com.example.aluguel_ms.ciclista.service;
 import com.example.aluguel_ms.ciclista.model.Ciclista;
 import com.example.aluguel_ms.ciclista.model.MeioDePagamento;
 import com.example.aluguel_ms.ciclista.repository.CiclistaRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.http.MediaType;
 import java.util.List;
 import java.util.Optional;
 import java.util.Map;
 
 @Service
 public class CiclistaService {
-    @org.springframework.beans.factory.annotation.Autowired
-    private com.example.aluguel_ms.aluguel.repository.AluguelRepository aluguelRepository;
+    private final WebClient webClient;
 
-    public void setAluguelRepository(com.example.aluguel_ms.aluguel.repository.AluguelRepository aluguelRepository) {
-        this.aluguelRepository = aluguelRepository;
+    @Value("${equipamento.url}")
+    private String equipamentoUrl;
+
+    public CiclistaService(CiclistaRepository repository, WebClient webClient) {
+        this.repository = repository;
+        this.webClient = webClient;
     }
+
     public boolean ciclistaSemAluguelEmAberto(Integer idCiclista) {
         if (idCiclista == null) return false;
         return aluguelRepository.findAll().stream()
@@ -25,19 +31,21 @@ public class CiclistaService {
     }
 
     public Object getBicicletaAlugada(Integer idCiclista) {
-        if (idCiclista == null || aluguelRepository == null) return null;
-        return aluguelRepository.findAll().stream()
-            .filter(a -> a.getCiclista() != null && a.getCiclista().equals(idCiclista) && a.getHoraFim() == null)
-            .findFirst()
-            .map(a -> Map.of("id", a.getBicicleta()))
-            .orElse(null);
+        if (idCiclista == null) return null;
+        try {
+            Map bicicleta = webClient.get()
+                    .uri(equipamentoUrl + "/aluguel/bicicletaAlugada/" + idCiclista)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    .bodyToMono(Map.class)
+                    .block();
+            return bicicleta;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private final CiclistaRepository repository;
-
-    public CiclistaService(CiclistaRepository repository) {
-        this.repository = repository;
-    }
 
     public boolean existeEmail(String email) {
         return repository.findByEmail(email).isPresent();
