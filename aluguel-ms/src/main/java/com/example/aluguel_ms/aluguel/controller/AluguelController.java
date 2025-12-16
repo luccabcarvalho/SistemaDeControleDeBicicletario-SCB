@@ -19,17 +19,28 @@ public class AluguelController {
     @PostMapping
     public ResponseEntity<Object> alugarBicicleta(@RequestBody Map<String, Object> payload) {
         try {
-            Integer ciclistaId = (Integer) payload.get("ciclista");
-            Integer trancaId = (Integer) payload.get("trancaInicio");
+            if (payload == null || !payload.containsKey("ciclista") || !payload.containsKey("trancaInicio")) {
+                return ResponseEntity.badRequest().body(Map.of("erro", "Requisição malformada: ciclista e trancaInicio são obrigatórios"));
+            }
+            Object ciclistaObj = payload.get("ciclista");
+            Object trancaObj = payload.get("trancaInicio");
+            Integer ciclistaId = null;
+            Integer trancaId = null;
+            try {
+                ciclistaId = (ciclistaObj instanceof Integer) ? (Integer) ciclistaObj : Integer.parseInt(ciclistaObj.toString());
+                trancaId = (trancaObj instanceof Integer) ? (Integer) trancaObj : Integer.parseInt(trancaObj.toString());
+            } catch (Exception e) {
+                return ResponseEntity.badRequest().body(Map.of("erro", "Parâmetros inválidos: ciclista e trancaInicio devem ser inteiros"));
+            }
             if (ciclistaId == null || trancaId == null) {
-                return ResponseEntity.status(org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY).body(DADOS_INVALIDOS);
+                return ResponseEntity.badRequest().body(Map.of("erro", "Parâmetros obrigatórios ausentes"));
             }
 
             return aluguelService.alugarBicicleta(ciclistaId, trancaId)
-                .map(aluguel -> ResponseEntity.status(org.springframework.http.HttpStatus.OK).body((Object) aluguel))
-                .orElseGet(() -> ResponseEntity.status(org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY).body(DADOS_INVALIDOS));
+                .map(aluguel -> ResponseEntity.ok((Object) aluguel))
+                .orElseGet(() -> ResponseEntity.unprocessableEntity().body(Map.of("erro", DADOS_INVALIDOS)));
         } catch (Exception e) {
-            return ResponseEntity.status(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR).body(DADOS_INVALIDOS);
+            return ResponseEntity.status(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("erro", DADOS_INVALIDOS));
         }
     }
 
