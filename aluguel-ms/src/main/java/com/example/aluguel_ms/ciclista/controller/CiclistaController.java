@@ -88,7 +88,11 @@ public class CiclistaController {
         }
 
         Ciclista criado = service.cadastrarCiclista(ciclista, meioDePagamento);
-        emailService.enviarEmail();
+
+        String destinatario = criado.getEmail();
+        String assunto = "Cadastro realizado com sucesso";
+        String mensagem = "Olá, " + criado.getNome() + ", seu cadastro foi realizado com sucesso no sistema de bicicletário.";
+        emailService.enviarEmail(destinatario, assunto, mensagem);
 
         return ResponseEntity.status(201).body(criado.toString());
     }
