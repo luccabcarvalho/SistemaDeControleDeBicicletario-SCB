@@ -32,7 +32,7 @@ public class CiclistaController {
     public ResponseEntity<Object> permiteAluguel(@PathVariable Integer idCiclista) {
         return service.buscarPorId(idCiclista)
                 .map(ciclista -> {
-                    boolean ativo = "ativo".equals(ciclista.getStatus());
+                    boolean ativo = "CONFIRMADO".equals(ciclista.getStatus());
                     boolean semAluguel = service.ciclistaSemAluguelEmAberto(idCiclista);
                     boolean podeAlugar = ativo && semAluguel;
                     return ResponseEntity.ok((Object)podeAlugar);

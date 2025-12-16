@@ -128,17 +128,12 @@ public class AluguelService {
     protected boolean ciclistaPodeAlugar(Integer ciclistaId) {
         if (ciclistaId == null || ciclistaId <= 0) return false;
         try {
-            String url = equipamentoUrl + "/ciclista/" + ciclistaId + "/permiteAluguel";
-            Map result = webClient.get()
-                .uri(url)
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .bodyToMono(Map.class)
-                .block();
-            if (result != null && Boolean.TRUE.equals(result.get("permite"))) {
-                return true;
-            }
-            return false;
+            Boolean permite = webClient.get()
+                    .uri("http://localhost:8080/ciclista/" + ciclistaId + "/permiteAluguel")
+                    .retrieve()
+                    .bodyToMono(Boolean.class)
+                    .block();
+            return Boolean.TRUE.equals(permite);
         } catch (Exception e) {
             return false;
         }
@@ -204,6 +199,7 @@ public class AluguelService {
         // validar ciclista
         if (!ciclistaPodeAlugar(ciclistaId)) return Optional.empty();
         // realizar cobrança
+        System.out.println("==============================//============================= TROPA DO MAL TA NA PISTA ==============================");
         if (!realizarCobranca(ciclistaId)) return Optional.empty();
         // registrar aluguel
         Aluguel aluguel = new Aluguel();
@@ -213,8 +209,6 @@ public class AluguelService {
         aluguel.setHoraInicio(LocalDateTime.now());
         aluguel.setCobranca(1); // id de cobrança fictício
         aluguelRepository.save(aluguel);
-        // alterar status da bicicleta (fictício)
-        // liberar tranca (fictício)
         liberarTranca(trancaId);
         // enviar email ao ciclista
         enviarEmail(ciclistaId, aluguel);
