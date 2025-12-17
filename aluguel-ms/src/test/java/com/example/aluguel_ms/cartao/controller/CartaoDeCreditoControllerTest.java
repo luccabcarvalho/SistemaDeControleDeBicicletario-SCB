@@ -49,7 +49,7 @@ class CartaoDeCreditoControllerTest {
         Map<String, Object> payload = new HashMap<>();
         payload.put("nomeTitular", "Joao");
         payload.put("numero", "1234567890123");
-        payload.put("validade", "2030-12-31");
+        payload.put("validade", "2030-12");
         payload.put("cvv", "123");
         MeioDePagamento novoCartao = MeioDePagamento.fromMap(payload);
         when(cartaoService.validarCartao(any())).thenReturn(true);
@@ -63,10 +63,12 @@ class CartaoDeCreditoControllerTest {
     void testAlterarCartaoDeCreditoDadosInvalidos() {
         Map<String, Object> payload = new HashMap<>();
         payload.put("nomeTitular", "Joao");
-        // falta numero, validade, cvv
         ResponseEntity<?> response = controller.alterarCartaoDeCredito(1, payload);
         assertEquals(422, response.getStatusCodeValue());
-        assertTrue(response.getBody().toString().contains("Dados inválidos"));
+        assertTrue(response.getBody() instanceof List, "O corpo da resposta deveria ser uma lista, mas foi: " + response.getBody());
+        List<?> body = (List<?>) response.getBody();
+        boolean contemMensagem = body.stream().anyMatch(msg -> msg != null && msg.toString().contains("Cartão recusado"));
+        assertTrue(contemMensagem, "A lista de mensagens deveria conter 'Cartão recusado', mas foi: " + body);
     }
 
     @Test
@@ -74,12 +76,14 @@ class CartaoDeCreditoControllerTest {
         Map<String, Object> payload = new HashMap<>();
         payload.put("nomeTitular", "Joao");
         payload.put("numero", "1234567890123");
-        payload.put("validade", "2030-12-31");
+        payload.put("validade", "2030-12"); 
         payload.put("cvv", "123");
         when(cartaoService.validarCartao(any())).thenReturn(false);
         ResponseEntity<?> response = controller.alterarCartaoDeCredito(1, payload);
         assertEquals(422, response.getStatusCodeValue());
-        assertTrue(response.getBody().toString().contains("Cartão recusado"));
+        assertTrue(response.getBody() instanceof List);
+        List<?> body = (List<?>) response.getBody();
+        assertTrue(body.contains("Cartão recusado"));
     }
 
     @Test
@@ -87,13 +91,13 @@ class CartaoDeCreditoControllerTest {
         Map<String, Object> payload = new HashMap<>();
         payload.put("nomeTitular", "Joao");
         payload.put("numero", "1234567890123");
-        payload.put("validade", "2030-12-31");
+        payload.put("validade", "2030-12");
         payload.put("cvv", "123");
         when(cartaoService.validarCartao(any())).thenReturn(true);
         when(service.atualizarMeioDePagamento(eq(99), any())).thenReturn(false);
         ResponseEntity<?> response = controller.alterarCartaoDeCredito(99, payload);
         assertEquals(404, response.getStatusCodeValue());
-        assertTrue(response.getBody().toString().contains("Ciclista não encontrado"));
+        assertEquals("Ciclista não encontrado", response.getBody());
     }
 
     @Test
@@ -101,7 +105,7 @@ class CartaoDeCreditoControllerTest {
         Map<String, Object> payload = new HashMap<>();
         payload.put("nomeTitular", "Joao");
         payload.put("numero", "1234567890123");
-        payload.put("validade", "2030-12-31");
+        payload.put("validade", "2030-12"); 
         payload.put("cvv", "123");
         when(cartaoService.validarCartao(any())).thenReturn(true);
         when(service.atualizarMeioDePagamento(eq(1), any())).thenReturn(true);

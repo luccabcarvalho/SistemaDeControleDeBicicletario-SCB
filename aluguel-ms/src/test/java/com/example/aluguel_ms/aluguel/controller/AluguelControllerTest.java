@@ -44,7 +44,9 @@ class AluguelControllerTest {
         payload.put("trancaInicio", -1);
         ResponseEntity<?> response = aluguelController.alugarBicicleta(payload);
         assertEquals(422, response.getStatusCodeValue());
-        assertEquals("Dados Inválidos", response.getBody());
+        assertTrue(response.getBody() instanceof Map);
+        Map<?,?> body = (Map<?,?>) response.getBody();
+        assertEquals("Dados Inválidos", body.get("erro"));
     }
 
     @Test
@@ -52,7 +54,9 @@ class AluguelControllerTest {
         Map<String, Object> payload = new HashMap<>();
         payload.put("ciclista", 1);
         ResponseEntity<?> response = aluguelController.alugarBicicleta(payload);
-        assertEquals(422, response.getStatusCodeValue());
-        assertEquals("Dados Inválidos", response.getBody());
+        assertEquals(400, response.getStatusCodeValue());
+        assertTrue(response.getBody() instanceof Map);
+        Map<?,?> body = (Map<?,?>) response.getBody();
+        assertEquals("Requisição malformada: ciclista e trancaInicio são obrigatórios", body.get("erro"));
     }
 }

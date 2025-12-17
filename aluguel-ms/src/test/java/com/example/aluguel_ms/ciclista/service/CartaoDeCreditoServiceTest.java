@@ -21,7 +21,6 @@ class CartaoDeCreditoServiceTest {
         m.setValidade(java.time.YearMonth.of(2030, 12));
         m.setCvv("123");
 
-        // Mock encadeado do WebClient
         WebClient.RequestBodyUriSpec requestBodyUriSpec = Mockito.mock(WebClient.RequestBodyUriSpec.class);
         WebClient.RequestBodySpec requestBodySpec = Mockito.mock(WebClient.RequestBodySpec.class);
         WebClient.RequestHeadersSpec requestHeadersSpec = Mockito.mock(WebClient.RequestHeadersSpec.class);
@@ -41,7 +40,7 @@ class CartaoDeCreditoServiceTest {
     void testValidarCartaoInvalidoNumero() {
         MeioDePagamento m = new MeioDePagamento();
         m.setNomeTitular("Joao");
-        m.setNumero("123"); // muito curto
+        m.setNumero("123");
         m.setValidade(java.time.YearMonth.of(2030, 12));
         m.setCvv("123");
         assertFalse(service.validarCartao(m));
@@ -53,7 +52,7 @@ class CartaoDeCreditoServiceTest {
         m.setNomeTitular("Joao");
         m.setNumero("1234567890123");
         m.setValidade(java.time.YearMonth.of(2030, 12));
-        m.setCvv("1"); // muito curto
+        m.setCvv("1");
         assertFalse(service.validarCartao(m));
     }
 

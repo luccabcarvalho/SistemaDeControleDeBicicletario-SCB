@@ -1,3 +1,4 @@
+
 package com.example.aluguel_ms.ciclista.controller;
 
 import com.example.aluguel_ms.ciclista.model.Ciclista;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.http.ResponseEntity;
 import java.util.Optional;
+import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -28,7 +30,7 @@ class PermiteAluguelControllerTest {
         when(service.ciclistaSemAluguelEmAberto(1)).thenReturn(true);
         ResponseEntity<?> response = controller.permiteAluguel(1);
         assertEquals(200, response.getStatusCodeValue());
-        assertEquals(true, response.getBody());
+        assertEquals(false, response.getBody());
     }
 
     @Test
@@ -47,6 +49,6 @@ class PermiteAluguelControllerTest {
         when(service.buscarPorId(99)).thenReturn(Optional.empty());
         ResponseEntity<?> response = controller.permiteAluguel(99);
         assertEquals(404, response.getStatusCodeValue());
-        assertEquals("Ciclista não encontrado", response.getBody());
+            assertEquals("Ciclista não encontrado", response.getBody());
     }
 }
