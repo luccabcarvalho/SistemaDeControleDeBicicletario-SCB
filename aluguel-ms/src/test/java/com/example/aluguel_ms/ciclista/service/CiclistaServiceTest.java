@@ -9,6 +9,8 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import org.springframework.web.reactive.function.client.WebClient;
+
 class CiclistaServiceTest {
     @Mock
     private com.example.aluguel_ms.aluguel.repository.AluguelRepository aluguelRepository;
@@ -36,13 +38,27 @@ class CiclistaServiceTest {
         assertNull(result);
     }
 
+    @Mock
+    private WebClient webClient;
+
     @Test
+    @SuppressWarnings({"unchecked", "rawtypes"})
     void testGetBicicletaAlugadaComAluguel() {
-        com.example.aluguel_ms.aluguel.model.Aluguel aluguel = new com.example.aluguel_ms.aluguel.model.Aluguel();
-        aluguel.setCiclista(1);
-        aluguel.setBicicleta(123);
-        aluguel.setHoraFim(null);
-        when(aluguelRepository.findAll()).thenReturn(java.util.List.of(aluguel));
+        // Mock do WebClient para simular resposta da API de equipamento
+        WebClient.RequestHeadersUriSpec requestHeadersUriSpec = mock(WebClient.RequestHeadersUriSpec.class);
+        WebClient.RequestHeadersSpec requestHeadersSpec = mock(WebClient.RequestHeadersSpec.class);
+        WebClient.ResponseSpec responseSpec = mock(WebClient.ResponseSpec.class);
+
+        when(webClient.get()).thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.uri(anyString())).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.accept(any())).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        Map<String, Object> bicicleta = new HashMap<>();
+        bicicleta.put("id", 123);
+        when(responseSpec.bodyToMono(eq(Map.class))).thenReturn(reactor.core.publisher.Mono.just(bicicleta));
+
+        service = new CiclistaService(repository, aluguelRepository, webClient);
+
         Object result = service.getBicicletaAlugada(1);
         assertNotNull(result);
         assertTrue(result instanceof Map);
@@ -58,7 +74,7 @@ class CiclistaServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        service.setAluguelRepository(aluguelRepository);
+        // aluguelRepository agora é injetado via construtor, não é necessário setAluguelRepository
     }
 
     @Test

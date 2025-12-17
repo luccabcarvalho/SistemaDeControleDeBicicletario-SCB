@@ -32,7 +32,7 @@ public class CiclistaController {
     public ResponseEntity<Object> permiteAluguel(@PathVariable Integer idCiclista) {
         return service.buscarPorId(idCiclista)
                 .map(ciclista -> {
-                    boolean ativo = "ativo".equals(ciclista.getStatus());
+                    boolean ativo = "CONFIRMADO".equals(ciclista.getStatus());
                     boolean semAluguel = service.ciclistaSemAluguelEmAberto(idCiclista);
                     boolean podeAlugar = ativo && semAluguel;
                     return ResponseEntity.ok((Object)podeAlugar);
@@ -62,34 +62,48 @@ public class CiclistaController {
     public ResponseEntity<Object> ativarCiclista(@PathVariable Integer idCiclista) {
         Ciclista ciclista = service.buscarPorId(idCiclista).orElse(null);
         if (ciclista == null) {
-            return ResponseEntity.status(404).body(CICLISTA_NAO_ENCONTRADO);
+            return ResponseEntity.status(404).body(Map.of("erro", CICLISTA_NAO_ENCONTRADO));
         }
         if ("ativo".equals(ciclista.getStatus())) {
-            return ResponseEntity.unprocessableEntity().body("Ciclista já está ativo");
+            return ResponseEntity.unprocessableEntity().body(Map.of("erro", "Ciclista já está ativo"));
         }
         if ("pendente".equals(ciclista.getStatus())) {
             Ciclista ativado = service.ativarCiclista(idCiclista);
             return ResponseEntity.ok(ativado);
         }
-        return ResponseEntity.unprocessableEntity().body("Não foi possível ativar o ciclista");
+        return ResponseEntity.unprocessableEntity().body(Map.of("erro", "Não foi possível ativar o ciclista"));
     }
 
     @PostMapping
-    public ResponseEntity<String> cadastrarCiclista(@RequestBody Map<String, Object> payload) {
-        Map<String, Object> ciclistaMap = (Map<String, Object>) payload.get("ciclista");
-        Map<String, Object> meioDePagamentoMap = (Map<String, Object>) payload.get("meioDePagamento");
-
-        Ciclista ciclista = Ciclista.fromMap(ciclistaMap);
-        MeioDePagamento meioDePagamento = MeioDePagamento.fromMap(meioDePagamentoMap);
-
+    public ResponseEntity<Object> cadastrarCiclista(@RequestBody Map<String, Object> payload) {
+        if (payload == null || !payload.containsKey("ciclista") || !payload.containsKey("meioDePagamento")) {
+            return ResponseEntity.badRequest().body(Map.of("erro", "Requisição malformada: ciclista e meioDePagamento são obrigatórios"));
+        }
+        Map<String, Object> ciclistaMap;
+        Map<String, Object> meioDePagamentoMap;
+        try {
+            ciclistaMap = (Map<String, Object>) payload.get("ciclista");
+            meioDePagamentoMap = (Map<String, Object>) payload.get("meioDePagamento");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("erro", "Estrutura do payload inválida"));
+        }
+        Ciclista ciclista;
+        MeioDePagamento meioDePagamento;
+        try {
+            ciclista = Ciclista.fromMap(ciclistaMap);
+            meioDePagamento = MeioDePagamento.fromMap(meioDePagamentoMap);
+        } catch (Exception e) {
+            return ResponseEntity.unprocessableEntity().body(Map.of("erro", "Dados inválidos para ciclista ou meio de pagamento"));
+        }
         boolean cartaoValido = cartaoService.validarCartao(meioDePagamento);
         if (!cartaoValido) {
-            return ResponseEntity.unprocessableEntity().body("Cartão inválido");
+            return ResponseEntity.unprocessableEntity().body(Map.of("erro", "Cartão inválido"));
         }
-
         Ciclista criado = service.cadastrarCiclista(ciclista, meioDePagamento);
-        emailService.enviarEmail();
-
+        String destinatario = criado.getEmail();
+        String assunto = "Cadastro realizado com sucesso";
+        String mensagem = "Olá, " + criado.getNome() + ", seu cadastro foi realizado com sucesso no sistema de bicicletário.";
+        emailService.enviarEmail(destinatario, assunto, mensagem);
         return ResponseEntity.status(201).body(criado.toString());
     }
 
@@ -101,18 +115,23 @@ public class CiclistaController {
     @GetMapping("/{idCiclista}")
     public ResponseEntity<Ciclista> buscarCiclista(@PathVariable Integer idCiclista) {
         return service.buscarPorId(idCiclista)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(404).build());
+            .map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.status(404).body(null));
     }
 
     @PutMapping("/{idCiclista}")
     public ResponseEntity<Ciclista> editarCiclista(@PathVariable Integer idCiclista, @RequestBody Map<String, Object> ciclistaMap) {
-        Ciclista dadosAtualizados = Ciclista.fromMap(ciclistaMap);
+        Ciclista dadosAtualizados;
+        try {
+            dadosAtualizados = Ciclista.fromMap(ciclistaMap);
+        } catch (Exception e) {
+            return ResponseEntity.unprocessableEntity().body(null);
+        }
         Ciclista atualizado = service.atualizarCiclista(idCiclista, dadosAtualizados);
         if (atualizado != null) {
             return ResponseEntity.ok(atualizado);
         }
-        return ResponseEntity.status(404).build();
+        return ResponseEntity.status(404).body(null);
     }
 
     @DeleteMapping("/{idCiclista}")
