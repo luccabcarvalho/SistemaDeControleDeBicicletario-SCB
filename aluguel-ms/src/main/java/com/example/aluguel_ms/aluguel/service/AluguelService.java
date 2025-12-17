@@ -199,7 +199,6 @@ public class AluguelService {
         // validar ciclista
         if (!ciclistaPodeAlugar(ciclistaId)) return Optional.empty();
         // realizar cobrança
-        System.out.println("==============================//============================= TROPA DO MAL TA NA PISTA ==============================");
         if (!realizarCobranca(ciclistaId)) return Optional.empty();
         // registrar aluguel
         Aluguel aluguel = new Aluguel();
