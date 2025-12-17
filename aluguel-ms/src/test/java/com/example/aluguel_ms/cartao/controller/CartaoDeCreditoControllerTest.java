@@ -49,7 +49,7 @@ class CartaoDeCreditoControllerTest {
         Map<String, Object> payload = new HashMap<>();
         payload.put("nomeTitular", "Joao");
         payload.put("numero", "1234567890123");
-        payload.put("validade", "2030-12"); // Corrige formato para YearMonth yyyy-MM
+        payload.put("validade", "2030-12");
         payload.put("cvv", "123");
         MeioDePagamento novoCartao = MeioDePagamento.fromMap(payload);
         when(cartaoService.validarCartao(any())).thenReturn(true);
@@ -63,7 +63,6 @@ class CartaoDeCreditoControllerTest {
     void testAlterarCartaoDeCreditoDadosInvalidos() {
         Map<String, Object> payload = new HashMap<>();
         payload.put("nomeTitular", "Joao");
-        // falta numero, validade, cvv
         ResponseEntity<?> response = controller.alterarCartaoDeCredito(1, payload);
         assertEquals(422, response.getStatusCodeValue());
         assertTrue(response.getBody() instanceof List, "O corpo da resposta deveria ser uma lista, mas foi: " + response.getBody());
@@ -92,7 +91,7 @@ class CartaoDeCreditoControllerTest {
         Map<String, Object> payload = new HashMap<>();
         payload.put("nomeTitular", "Joao");
         payload.put("numero", "1234567890123");
-        payload.put("validade", "2030-12"); // Corrige formato para YearMonth yyyy-MM
+        payload.put("validade", "2030-12");
         payload.put("cvv", "123");
         when(cartaoService.validarCartao(any())).thenReturn(true);
         when(service.atualizarMeioDePagamento(eq(99), any())).thenReturn(false);
@@ -114,6 +113,5 @@ class CartaoDeCreditoControllerTest {
         ResponseEntity<?> response = controller.alterarCartaoDeCredito(1, payload);
         assertEquals(422, response.getStatusCodeValue());
         assertTrue(response.getBody().toString().contains("Não foi possível enviar o email"));
-        // Removido: não faz sentido para o retorno atual
     }
 }

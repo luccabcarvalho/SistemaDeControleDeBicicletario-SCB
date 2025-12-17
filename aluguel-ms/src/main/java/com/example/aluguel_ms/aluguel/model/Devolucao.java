@@ -58,7 +58,6 @@ public class Devolucao {
     public void setReparoSolicitado(boolean reparoSolicitado) { this.reparoSolicitado = reparoSolicitado; }
     public boolean isPagamentoAutorizado() { return pagamentoAutorizado; }
     public void setPagamentoAutorizado(boolean pagamentoAutorizado) { this.pagamentoAutorizado = pagamentoAutorizado; }
-    // Métodos alias para compatibilidade com os testes
     public Integer getIdBicicleta() { return getBicicletaId(); }
     public void setIdBicicleta(Integer id) { setBicicletaId(id); }
     public Integer getIdTranca() { return getTrancaId(); }

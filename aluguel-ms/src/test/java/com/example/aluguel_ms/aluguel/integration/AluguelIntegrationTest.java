@@ -44,7 +44,6 @@ public class AluguelIntegrationTest {
 
     @Test
     void deveRetornar422QuandoDadosInvalidos() throws Exception {
-        // IDs válidos mas que não existem ou não podem alugar
         String payload = "{" +
                 "\"ciclista\": 9999," +
                 "\"trancaInicio\": 8888}";
@@ -54,17 +53,4 @@ public class AluguelIntegrationTest {
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(jsonPath("$.erro").exists());
     }
-
-    // O teste de sucesso depende de dados válidos no banco. Adapte conforme fixtures.
-    // @Test
-    // void deveAlugarBicicletaComSucesso() throws Exception {
-    //     String payload = "{" +
-    //             "\"ciclista\": 1," +
-    //             "\"trancaInicio\": 1}";
-    //     mockMvc.perform(post("/aluguel")
-    //             .contentType(MediaType.APPLICATION_JSON)
-    //             .content(payload))
-    //             .andExpect(status().isOk())
-    //             .andExpect(jsonPath("$.id").exists());
-    // }
 }

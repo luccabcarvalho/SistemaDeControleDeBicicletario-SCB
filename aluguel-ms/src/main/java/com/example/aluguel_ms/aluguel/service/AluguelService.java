@@ -38,7 +38,6 @@ public class AluguelService {
         }
         Aluguel aluguel = aluguelOpt.get();
 
-        // Simular validação de tranca e bicicleta (mock nos testes)
         // Calcular valor extra
         LocalDateTime agora = LocalDateTime.now();
         long minutos = java.time.Duration.between(aluguel.getHoraInicio(), agora).toMinutes();
@@ -48,7 +47,6 @@ public class AluguelService {
             long meiaHoras = (minutosExcedentes + 29) / 30;
             valorExtra = meiaHoras * 5.0;
         }
-        // Simular cobrança extra (mock nos testes)
         String statusPagamento = "ok";
         if (valorExtra > 0) {
             statusPagamento = "ok";
@@ -206,7 +204,7 @@ public class AluguelService {
         aluguel.setBicicleta(bicicletaId);
         aluguel.setTrancaInicio(trancaId);
         aluguel.setHoraInicio(LocalDateTime.now());
-        aluguel.setCobranca(1); // id de cobrança fictício
+        aluguel.setCobranca(1);
         aluguelRepository.save(aluguel);
         liberarTranca(trancaId);
         // enviar email ao ciclista

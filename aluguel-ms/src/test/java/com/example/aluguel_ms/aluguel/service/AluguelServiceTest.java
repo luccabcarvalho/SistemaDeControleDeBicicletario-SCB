@@ -21,7 +21,6 @@ class AluguelServiceTest {
     @Test
     void testAlugarBicicletaSucesso() {
         when(aluguelRepository.save(any())).thenAnswer(i -> i.getArgument(0));
-        // Mockar métodos auxiliares para garantir sucesso
         AluguelService spyService = Mockito.spy(aluguelService);
         Mockito.doReturn(true).when(spyService).validarTranca(2);
         Mockito.doReturn(102).when(spyService).obterBicicletaNaTranca(2);

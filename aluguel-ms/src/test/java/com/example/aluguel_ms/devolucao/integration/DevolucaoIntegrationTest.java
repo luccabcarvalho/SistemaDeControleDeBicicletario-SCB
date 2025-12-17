@@ -52,17 +52,4 @@ public class DevolucaoIntegrationTest {
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(jsonPath("$.erro").exists());
     }
-
-    // O teste de sucesso depende de dados válidos no banco. Adapte conforme fixtures.
-    // @Test
-    // void deveDevolverBicicletaComSucesso() throws Exception {
-    //     String payload = "{" +
-    //             "\"trancaId\": 1," +
-    //             "\"bicicletaId\": 1}";
-    //     mockMvc.perform(post("/devolucao")
-    //             .contentType(MediaType.APPLICATION_JSON)
-    //             .content(payload))
-    //             .andExpect(status().isOk())
-    //             .andExpect(jsonPath("$.idBicicleta").exists());
-    // }
 }

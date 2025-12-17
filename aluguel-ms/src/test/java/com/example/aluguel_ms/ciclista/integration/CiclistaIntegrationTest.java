@@ -45,16 +45,4 @@ public class CiclistaIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("false"));
     }
-
-    // Testes de sucesso dependem de fixtures válidas
-    // @Test
-    // void deveCadastrarCiclistaComSucesso() throws Exception {
-    //     String payload = "{" +
-    //             "\"ciclista\": {\"nome\": \"Teste\", \"nascimento\": \"2000-01-01\", \"cpf\": \"12345678900\", \"nacionalidade\": \"BR\", \"email\": \"teste@teste.com\", \"urlFotoDocumento\": \"url\", \"senha\": \"123\"}," +
-    //             "\"meioDePagamento\": {\"numero\": \"1234123412341\", \"nomeTitular\": \"Teste\", \"validade\": \"12/30\", \"cvv\": \"123\"}}";
-    //     mockMvc.perform(post("/ciclista")
-    //             .contentType(MediaType.APPLICATION_JSON)
-    //             .content(payload))
-    //             .andExpect(status().isOk());
-    // }
 }
