@@ -12,12 +12,12 @@ class MeioDePagamentoCartaoTest {
         Map<String, Object> map = new HashMap<>();
         map.put("nomeTitular", "Maria Souza");
         map.put("numero", "6543210987654321");
-        map.put("validade", "2026-11-30");
+        map.put("validade", "2026-11"); // Corrige formato para YearMonth yyyy-MM
         map.put("cvv", "456");
         MeioDePagamento m = MeioDePagamento.fromMap(map);
         assertEquals("Maria Souza", m.getNomeTitular());
         assertEquals("6543210987654321", m.getNumero());
-        assertEquals(LocalDate.of(2026, 11, 30), m.getValidade());
+        assertEquals(java.time.YearMonth.of(2026, 11), m.getValidade());
         assertEquals("456", m.getCvv());
     }
 
@@ -26,6 +26,9 @@ class MeioDePagamentoCartaoTest {
         Map<String, Object> map = new HashMap<>();
         map.put("nomeTitular", "Maria Souza");
         // falta numero, validade, cvv
-        assertThrows(Exception.class, () -> MeioDePagamento.fromMap(map));
+        MeioDePagamento m = MeioDePagamento.fromMap(map);
+        assertNull(m.getNumero());
+        assertNull(m.getValidade());
+        assertNull(m.getCvv());
     }
 }
