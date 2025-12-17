@@ -121,7 +121,7 @@ public class DevolucaoService {
         long minutos = tempoUso.toMinutes();
         if (minutos <= 120) return 0.0;
         long minutosExcedentes = minutos - 120;
-        long meiaHoras = (minutosExcedentes + 29) / 30; // arredonda para cima
+        long meiaHoras = (minutosExcedentes + 29) / 30;
         return meiaHoras * 5.0;
     }
 
@@ -166,7 +166,6 @@ public class DevolucaoService {
 
     private void enviarEmailDevolucao(Integer idCiclista, Devolucao devolucao) {
         try {
-            // Buscar e-mail real do ciclista se necessário
             String destinatario = "ciclista@email.com";
             String assunto = "Devolução de bicicleta registrada";
             String mensagem = "Sua devolução foi registrada. Dados: " + devolucao.toString();

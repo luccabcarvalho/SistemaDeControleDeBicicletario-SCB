@@ -20,7 +20,6 @@ public class MeioDePagamento {
     @Column(nullable = false)
     private String nomeTitular;
 
-    // Agora espera apenas ano-mês (yyyy-MM)
     @Column(nullable = false)
     private YearMonth validade;
 
@@ -73,7 +72,6 @@ public class MeioDePagamento {
         MeioDePagamento m = new MeioDePagamento();
         m.numero = (String) map.get("numero");
         m.nomeTitular = (String) map.get("nomeTitular");
-        // Espera string no formato yyyy-MM
         Object validadeObj = map.get("validade");
         if (validadeObj != null) {
             m.validade = YearMonth.parse(validadeObj.toString());

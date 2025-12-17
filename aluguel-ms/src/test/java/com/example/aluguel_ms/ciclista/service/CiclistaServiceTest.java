@@ -44,7 +44,6 @@ class CiclistaServiceTest {
     @Test
     @SuppressWarnings({"unchecked", "rawtypes"})
     void testGetBicicletaAlugadaComAluguel() {
-        // Mock do WebClient para simular resposta da API de equipamento
         WebClient.RequestHeadersUriSpec requestHeadersUriSpec = mock(WebClient.RequestHeadersUriSpec.class);
         WebClient.RequestHeadersSpec requestHeadersSpec = mock(WebClient.RequestHeadersSpec.class);
         WebClient.ResponseSpec responseSpec = mock(WebClient.ResponseSpec.class);
@@ -74,7 +73,6 @@ class CiclistaServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        // aluguelRepository agora é injetado via construtor, não é necessário setAluguelRepository
     }
 
     @Test

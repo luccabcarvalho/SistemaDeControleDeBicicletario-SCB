@@ -48,8 +48,6 @@ public class CiclistaService {
         }
     }
 
-    // ...existing code...
-
     public boolean existeEmail(String email) {
         return repository.findByEmail(email).isPresent();
     }

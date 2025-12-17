@@ -45,7 +45,9 @@ class DevolucaoControllerTest {
         payload.put("bicicletaId", -1);
         ResponseEntity<?> response = devolucaoController.devolverBicicleta(payload);
         assertEquals(422, response.getStatusCodeValue());
-        assertEquals("Dados Inválidos", response.getBody());
+        assertTrue(response.getBody() instanceof Map);
+        Map<?,?> body = (Map<?,?>) response.getBody();
+        assertEquals("Dados Inválidos", body.get("erro"));
     }
 
     @Test
@@ -54,6 +56,8 @@ class DevolucaoControllerTest {
         payload.put("trancaId", 2);
         ResponseEntity<?> response = devolucaoController.devolverBicicleta(payload);
         assertEquals(400, response.getStatusCodeValue());
-        assertEquals("Dados Inválidos", response.getBody());
+        assertTrue(response.getBody() instanceof Map);
+        Map<?,?> body = (Map<?,?>) response.getBody();
+        assertEquals("Requisição malformada: trancaId e bicicletaId são obrigatórios", body.get("erro"));
     }
 }

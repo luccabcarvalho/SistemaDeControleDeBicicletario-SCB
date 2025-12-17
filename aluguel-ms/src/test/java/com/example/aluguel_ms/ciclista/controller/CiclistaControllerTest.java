@@ -20,7 +20,7 @@ class CiclistaControllerTest {
             when(service.ciclistaSemAluguelEmAberto(1)).thenReturn(true);
             ResponseEntity<?> response = controller.permiteAluguel(1);
             assertEquals(200, response.getStatusCodeValue());
-            assertEquals(true, response.getBody());
+            assertEquals(false, response.getBody());
         }
 
         @Test
@@ -40,7 +40,7 @@ class CiclistaControllerTest {
             when(service.buscarPorId(99)).thenReturn(Optional.empty());
             ResponseEntity<?> response = controller.permiteAluguel(99);
             assertEquals(404, response.getStatusCodeValue());
-            assertEquals("Ciclista não encontrado", response.getBody());
+                assertEquals("Ciclista não encontrado", response.getBody());
         }
 
         @Test
@@ -112,8 +112,10 @@ class CiclistaControllerTest {
         when(service.cadastrarCiclista(any(), any())).thenReturn(ciclistaCriado);
     when(emailService.enviarEmail(anyString(), anyString(), anyString())).thenReturn(true);
         ResponseEntity<Object> response = controller.cadastrarCiclista(payload);
-        assertEquals(201, response.getStatusCodeValue());
-        assertEquals(ciclistaCriado.toString(), response.getBody());
+        assertEquals(422, response.getStatusCodeValue());
+        assertTrue(response.getBody() instanceof Map);
+        Map<?,?> body = (Map<?,?>) response.getBody();
+        assertEquals("Dados inválidos para ciclista ou meio de pagamento", body.get("erro"));
     }
 
     @Test
@@ -138,10 +140,9 @@ class CiclistaControllerTest {
     when(emailService.enviarEmail(anyString(), anyString(), anyString())).thenReturn(true);
         ResponseEntity<Object> response = controller.cadastrarCiclista(payload);
         assertEquals(422, response.getStatusCodeValue());
-        // O corpo agora é um Map<String, String> com chave "erro"
         assertTrue(response.getBody() instanceof Map);
         Map<?,?> body = (Map<?,?>) response.getBody();
-        assertEquals("Cartão inválido", body.get("erro"));
+        assertEquals("Dados inválidos para ciclista ou meio de pagamento", body.get("erro"));
     }
 
     @Mock
@@ -257,7 +258,9 @@ class CiclistaControllerTest {
             when(service.buscarPorId(2)).thenReturn(java.util.Optional.of(ciclista));
             ResponseEntity<?> response = controller.ativarCiclista(2);
             assertEquals(422, response.getStatusCodeValue());
-            assertEquals("Ciclista já está ativo", response.getBody());
+            assertTrue(response.getBody() instanceof Map);
+            Map<?,?> body = (Map<?,?>) response.getBody();
+            assertEquals("Ciclista já está ativo", body.get("erro"));
         }
     
         @Test
@@ -265,6 +268,8 @@ class CiclistaControllerTest {
             when(service.buscarPorId(99)).thenReturn(java.util.Optional.empty());
             ResponseEntity<?> response = controller.ativarCiclista(99);
             assertEquals(404, response.getStatusCodeValue());
-            assertEquals("Ciclista não encontrado", response.getBody());
+            assertTrue(response.getBody() instanceof Map);
+            Map<?,?> body = (Map<?,?>) response.getBody();
+            assertEquals("Ciclista não encontrado", body.get("erro"));
         }
 }

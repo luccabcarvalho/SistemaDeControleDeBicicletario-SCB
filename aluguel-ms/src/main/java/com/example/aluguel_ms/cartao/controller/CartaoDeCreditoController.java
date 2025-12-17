@@ -48,7 +48,6 @@ public class CartaoDeCreditoController {
         if (!cartaoAtualizado) {
             return ResponseEntity.status(404).body(CICLISTA_NAO_ENCONTRADO);
         }
-        // Enviar email de confirmação de alteração de cartão
         MeioDePagamento meio = service.getMeioDePagamento(idCiclista);
         String destinatario = (meio != null) ? meio.getNumero() : "";
         String assunto = "Cartão de crédito atualizado";
